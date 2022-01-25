@@ -1,0 +1,8 @@
+{
+  "name": "Avatar",
+  "description": "Add avatar to settings panel",
+  "uuid": "avatar@pawel.swiszcz.com",
+  "shell-version": [
+    "41"
+  ]
+}
