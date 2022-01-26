@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schemalist>
+  <schema id="org.gnome.shell.extensions.avatar" path="/org/gnome/shell/extensions/avatar/">
+    <!-- See also: https://docs.gtk.org/glib/gvariant-format-strings.html -->
+    <key name="horizontal-mode" type="b">
+      <default>true</default>
+      <summary>Horizontal mode</summary>
+      <description>Horizontal mode</description>
+    </key>
+    <key name="show-name" type="b">
+      <default>true</default>
+      <summary>Show user name first and last</summary>
+      <description>Show user name first and last</description>
+    </key>
+    <key name="name-style-dark" type="b">
+      <default>true</default>
+      <summary>Login dark style</summary>
+      <description>Login dark style</description>
+    </key>
+  </schema>
+</schemalist>
