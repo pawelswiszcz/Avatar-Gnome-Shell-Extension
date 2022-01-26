@@ -31,41 +31,41 @@ const AvatarSettings = new GObject.Class({
         this.margin_top = 32;
         this.margin_bottom = 32;
 
-        this.createHorizontal();         
+        this.addSwitch('horizontal-mode', 'Enable horizontal mode:');         
     },
 
-    createHorizontal: function () {
+    addSwitch: function ($key, $text) {
         //Create temp vars
-        let horizontalLabel = null;
-        let horizontalToggle = null;
+        let labeLabel = null;
+        let toggle = null;
 
         //Get values from gschema for horizontalmode and usedefaultvalues
-        let horizontalmode = this.settings.get_boolean('horizontal-mode');
+        let value = this.settings.get_boolean($key);
 
         //Create horizontal mode and default values toggleable switches
-        horizontalToggle = new Gtk.Switch({ halign: Gtk.Align.END });
+        toggle = new Gtk.Switch({ halign: Gtk.Align.END });
 
         //Set it's state to gschemas' default
-        horizontalToggle.set_state(horizontalmode);
+        toggle.set_state(value);
 
         //Creates labels;
-        horizontalLabel = new Gtk.Label({
-            label: 'Enable horizontal mode:',
+        labeLabel = new Gtk.Label({
+            label: $text,
             hexpand: true,
             halign: Gtk.Align.START
         });
 
         /*Connects the change of state of the switch with the change of
         gschemas' value*/
-        horizontalToggle.connect('state-set', Lang.bind(this, function (w) {
-            this.settings.set_boolean('horizontalmode', !horizontalmode);
-            horizontalmode = !horizontalmode;
+        toggle.connect('state-set', Lang.bind(this, function (w) {
+            this.settings.set_boolean($key, !value);
+            value = !value;
         }));
 
 
         //Adds all widgets to the window
-        this.attach(horizontalLabel, 0, 1, 1, 1);
-        this.attach(horizontalToggle, 1, 1, 1, 1);
+        this.attach(labeLabel, 0, 1, 1, 1);
+        this.attach(toggle, 1, 1, 1, 1);
     },
 
 });

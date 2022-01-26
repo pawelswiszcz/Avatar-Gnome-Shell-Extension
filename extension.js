@@ -53,8 +53,6 @@ function updateExtensionAppearence() {
     //Get values from gschema for horizontalmode and usedefaultvalues
     let horizontalmode = settings.get_boolean('horizontal-mode');
 
-    settings.connect('changed::horizontal-mode', resetPre);
-
     if (horizontalmode) {
         orientation = Clutter.Orientation.HORIZONTAL;
     }
@@ -82,7 +80,7 @@ function updateExtensionAppearence() {
     this.iconMenuItem.actor.get_last_child().add_child(avatar);
 }
 
-function resetPre() {
+function resetAfeterChange() {
     //Disconnects systemMenu
     this.systemMenu = Main.panel.statusArea['aggregateMenu']._system;
     if (this._menuOpenStateChangedId) {
@@ -93,6 +91,7 @@ function resetPre() {
     if (iconMenuItem) {
         iconMenuItem.destroy();
     }
+    updateExtensionAppearence();
 }
 
 class Extension {
@@ -101,10 +100,12 @@ class Extension {
     }
 
     enable() {
+        settings.connect('changed::horizontal-mode', resetAfeterChange);
         updateExtensionAppearence();
     }
 
     disable() {
+        
         this.systemMenu = Main.panel.statusArea['aggregateMenu']._system;
         if (this._menuOpenStateChangedId) {
             this.systemMenu.menu.disconnect(this._menuOpenStateChangedId);
