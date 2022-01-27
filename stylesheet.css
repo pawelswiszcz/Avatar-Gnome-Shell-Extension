@@ -1,1 +1,4 @@
 /* Add your custom extension styling here */
+.dark .user-widget-label{
+    color: #222222;
+}

@@ -18,8 +18,7 @@ const AvatarSettings = new GObject.Class({
     _init: function (params) {
 
         // Copy the same GSettings code from `extension.js`
-        this.settings = ExtensionUtils.getSettings(
-            'org.gnome.shell.extensions.avatar');
+        this.settings = ExtensionUtils.getSettings('org.gnome.shell.extensions.avatar');
 
 
         //Give grid's characteristics
@@ -31,12 +30,25 @@ const AvatarSettings = new GObject.Class({
         this.margin_top = 32;
         this.margin_bottom = 32;
 
-        this.addSwitch('horizontal-mode', 'Enable horizontal mode:');         
+        let $gtkSwitchHmode = this.getSwitch('horizontal-mode', 'Enable horizontal mode:');
+
+        this.attach($gtkSwitchHmode.gtkLabel, 0, 1, 1, 1);
+        this.attach($gtkSwitchHmode.toggle, 1, 1, 1, 1);
+
+        let $gtkSwitchUserName = this.getSwitch('show-name', 'Show user name:');
+
+        this.attach($gtkSwitchUserName.gtkLabel, 0, 2, 1, 1);
+        this.attach($gtkSwitchUserName.toggle, 1, 2, 1, 1);
+
+        let $gtkSwitchShowDarkStyle = this.getSwitch('name-style-dark', 'User name dark style:');
+
+        this.attach($gtkSwitchShowDarkStyle.gtkLabel, 0, 3, 1, 1);
+        this.attach($gtkSwitchShowDarkStyle.toggle, 1, 3, 1, 1);
     },
 
-    addSwitch: function ($key, $text) {
+    getSwitch: function ($key, $text) {
         //Create temp vars
-        let labeLabel = null;
+        let gtkLabel = null;
         let toggle = null;
 
         //Get values from gschema for horizontalmode and usedefaultvalues
@@ -49,7 +61,7 @@ const AvatarSettings = new GObject.Class({
         toggle.set_state(value);
 
         //Creates labels;
-        labeLabel = new Gtk.Label({
+        gtkLabel = new Gtk.Label({
             label: $text,
             hexpand: true,
             halign: Gtk.Align.START
@@ -62,10 +74,7 @@ const AvatarSettings = new GObject.Class({
             value = !value;
         }));
 
-
-        //Adds all widgets to the window
-        this.attach(labeLabel, 0, 1, 1, 1);
-        this.attach(toggle, 1, 1, 1, 1);
+        return { toggle, gtkLabel };
     },
 
 });

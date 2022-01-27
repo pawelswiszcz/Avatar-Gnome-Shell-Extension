@@ -26,7 +26,7 @@ const Util = imports.misc.util;
 const PanelMenu = imports.ui.panelMenu;
 const PopupMenu = imports.ui.popupMenu;
 
-const { Avatar } = imports.ui.userWidget;
+const { Avatar, UserWidgetLabel } = imports.ui.userWidget;
 
 
 const _ = ExtensionUtils.gettext;
@@ -75,7 +75,7 @@ function updateExtensionAppearence() {
 
     var userManager = AccountsService.UserManager.get_default();
     var user = userManager.get_user(GLib.get_user_name());
-    var avatar = new UserWidget(user, orientation, false);
+    var avatar = new UserWidget(user, orientation, settings.get_boolean('show-name'), settings.get_boolean('name-style-dark'));
     avatar._updateUser();
     this.iconMenuItem.actor.get_last_child().add_child(avatar);
 }
@@ -101,11 +101,13 @@ class Extension {
 
     enable() {
         settings.connect('changed::horizontal-mode', resetAfeterChange);
+        settings.connect('changed::show-name', resetAfeterChange);
+        settings.connect('changed::name-style-dark', resetAfeterChange);
         updateExtensionAppearence();
     }
 
     disable() {
-        
+
         this.systemMenu = Main.panel.statusArea['aggregateMenu']._system;
         if (this._menuOpenStateChangedId) {
             this.systemMenu.menu.disconnect(this._menuOpenStateChangedId);
@@ -115,13 +117,8 @@ class Extension {
         if (iconMenuItem) {
             iconMenuItem.destroy();
         }
-
-        //settings.run_dispose()
     }
-
-   
 }
-
 
 
 function init(meta) {
@@ -131,13 +128,17 @@ function init(meta) {
 
 var UserWidget = GObject.registerClass(
     class UserWidget extends St.BoxLayout {
-        _init(user, orientation = Clutter.Orientation.HORIZONTAL, useLabel = false) {
+        _init(user, orientation = Clutter.Orientation.HORIZONTAL, useLabel = false, useDark = false) {
             // If user is null, that implies a username-based login authorization.
             this._user = user;
 
             let vertical = orientation == Clutter.Orientation.VERTICAL;
             let xAlign = vertical ? Clutter.ActorAlign.CENTER : Clutter.ActorAlign.START;
             let styleClass = vertical ? 'user-widget vertical' : 'user-widget horizontal';
+
+            if(useDark){
+                styleClass += ' dark';
+            }
 
             super._init({
                 styleClass,
@@ -154,6 +155,8 @@ var UserWidget = GObject.registerClass(
             this._userLoadedId = 0;
             this._userChangedId = 0;
             if (user) {
+                log('label');
+                log(useLabel);
                 if (useLabel) {
                     this._label = new UserWidgetLabel(user);
                     this.add_child(this._label);
