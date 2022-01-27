@@ -4,5 +4,7 @@
   "uuid": "avatar@pawel.swiszcz.com",
   "shell-version": [
     "41"
-  ]
+  ],
+  "version": 0.1,
+  "url": "https://github.com/pawelswiszcz/Avatar-Gnome-Shell-Extension"
 }
