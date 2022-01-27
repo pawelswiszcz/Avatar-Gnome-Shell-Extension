@@ -17,5 +17,10 @@
       <summary>Login dark style</summary>
       <description>Login dark style</description>
     </key>
+    <key name="avatar-shadow" type="b">
+      <default>true</default>
+      <summary>Add shadow to avatar</summary>
+      <description>Add shadow to avatar</description>
+    </key>
   </schema>
 </schemalist>

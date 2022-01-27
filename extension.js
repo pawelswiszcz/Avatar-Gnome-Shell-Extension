@@ -32,8 +32,6 @@ const { Avatar, UserWidgetLabel } = imports.ui.userWidget;
 const _ = ExtensionUtils.gettext;
 const Me = ExtensionUtils.getCurrentExtension();
 
-const settings = ExtensionUtils.getSettings('org.gnome.shell.extensions.avatar');
-
 
 //Creates temporary iconMenuItem variable
 var iconMenuItem = null;
@@ -44,6 +42,8 @@ function openUserAccount() {
 }
 
 function updateExtensionAppearence() {
+    this.settings = ExtensionUtils.getSettings('org.gnome.shell.extensions.avatar');
+
     //Creates new PopupMenuItem
     this.iconMenuItem = new PopupMenu.PopupMenuItem('');
     this.iconMenuItem.connect('button-press-event', openUserAccount);
@@ -51,7 +51,7 @@ function updateExtensionAppearence() {
 
 
     //Get values from gschema for horizontalmode and usedefaultvalues
-    let horizontalmode = settings.get_boolean('horizontal-mode');
+    let horizontalmode = this.settings.get_boolean('horizontal-mode');
 
     if (horizontalmode) {
         orientation = Clutter.Orientation.HORIZONTAL;
@@ -75,12 +75,14 @@ function updateExtensionAppearence() {
 
     var userManager = AccountsService.UserManager.get_default();
     var user = userManager.get_user(GLib.get_user_name());
-    var avatar = new UserWidget(user, orientation, settings.get_boolean('show-name'), settings.get_boolean('name-style-dark'));
+    var avatar = new UserWidget(user, orientation, this.settings.get_boolean('show-name'), this.settings.get_boolean('name-style-dark'), this.settings.get_boolean('avatar-shadow'));
     avatar._updateUser();
     this.iconMenuItem.actor.get_last_child().add_child(avatar);
 }
 
 function resetAfeterChange() {
+    log('chaned');
+
     //Disconnects systemMenu
     this.systemMenu = Main.panel.statusArea['aggregateMenu']._system;
     if (this._menuOpenStateChangedId) {
@@ -100,9 +102,12 @@ class Extension {
     }
 
     enable() {
-        settings.connect('changed::horizontal-mode', resetAfeterChange);
-        settings.connect('changed::show-name', resetAfeterChange);
-        settings.connect('changed::name-style-dark', resetAfeterChange);
+        this.settings = ExtensionUtils.getSettings('org.gnome.shell.extensions.avatar');
+
+        this.settings.connect('changed::horizontal-mode', resetAfeterChange);
+        this.settings.connect('changed::show-name', resetAfeterChange);
+        this.settings.connect('changed::name-style-dark', resetAfeterChange);
+        this.settings.connect('changed::avatar-shadow', resetAfeterChange);
         updateExtensionAppearence();
     }
 
@@ -117,6 +122,7 @@ class Extension {
         if (iconMenuItem) {
             iconMenuItem.destroy();
         }
+        this.settings = null;
     }
 }
 
@@ -128,7 +134,7 @@ function init(meta) {
 
 var UserWidget = GObject.registerClass(
     class UserWidget extends St.BoxLayout {
-        _init(user, orientation = Clutter.Orientation.HORIZONTAL, useLabel = false, useDark = false) {
+        _init(user, orientation = Clutter.Orientation.HORIZONTAL, useLabel = false, useDark = false, addShadow = false) {
             // If user is null, that implies a username-based login authorization.
             this._user = user;
 
@@ -138,6 +144,10 @@ var UserWidget = GObject.registerClass(
 
             if(useDark){
                 styleClass += ' dark';
+            }
+
+            if(addShadow){
+                styleClass += ' shadow';
             }
 
             super._init({
@@ -155,8 +165,7 @@ var UserWidget = GObject.registerClass(
             this._userLoadedId = 0;
             this._userChangedId = 0;
             if (user) {
-                log('label');
-                log(useLabel);
+            
                 if (useLabel) {
                     this._label = new UserWidgetLabel(user);
                     this.add_child(this._label);

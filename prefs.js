@@ -44,6 +44,11 @@ const AvatarSettings = new GObject.Class({
 
         this.attach($gtkSwitchShowDarkStyle.gtkLabel, 0, 3, 1, 1);
         this.attach($gtkSwitchShowDarkStyle.toggle, 1, 3, 1, 1);
+
+        let $gtkSwitchShowShadowStyle = this.getSwitch('avatar-shadow', 'Add shadow to avatar:');
+
+        this.attach($gtkSwitchShowShadowStyle.gtkLabel, 0, 4, 1, 1);
+        this.attach($gtkSwitchShowShadowStyle.toggle, 1, 4, 1, 1);
     },
 
     getSwitch: function ($key, $text) {
@@ -69,10 +74,13 @@ const AvatarSettings = new GObject.Class({
 
         /*Connects the change of state of the switch with the change of
         gschemas' value*/
-        toggle.connect('state-set', Lang.bind(this, function (w) {
+
+        let func =  function (w) {
             this.settings.set_boolean($key, !value);
             value = !value;
-        }));
+        };
+
+        toggle.connect('state-set', func.bind(this));
 
         return { toggle, gtkLabel };
     },
