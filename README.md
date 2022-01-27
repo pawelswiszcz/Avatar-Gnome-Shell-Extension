@@ -14,4 +14,4 @@ It was based on https://github.com/GustavoPeredo/Big-Avatar-Gnome-Shell-Extensio
 <img src="assets/1.png">
 
 
-More screns in assets directory
+More screens in <a href="https://github.com/pawelswiszcz/Avatar-Gnome-Shell-Extension/tree/master/assets">assets</a> directory
