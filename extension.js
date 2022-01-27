@@ -81,8 +81,6 @@ function updateExtensionAppearence() {
 }
 
 function resetAfeterChange() {
-    log('chaned');
-
     //Disconnects systemMenu
     this.systemMenu = Main.panel.statusArea['aggregateMenu']._system;
     if (this._menuOpenStateChangedId) {
