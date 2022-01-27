@@ -9,11 +9,9 @@ It was based on https://github.com/GustavoPeredo/Big-Avatar-Gnome-Shell-Extensio
 
 # Screens
 
-<img src="assets/2.png">
+<img src="assets/8.png">
 
 <img src="assets/1.png">
-
-<img src="assets/8.png">
 
 
 More screens in <a href="https://github.com/pawelswiszcz/Avatar-Gnome-Shell-Extension/tree/master/assets">assets</a> directory
