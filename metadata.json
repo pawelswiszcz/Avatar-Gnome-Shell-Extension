@@ -1,10 +1,10 @@
 {
+  "uuid": "avatar@pawel.swiszcz.com",
   "name": "Avatar",
   "description": "Add avatar to settings panel",
-  "uuid": "avatar@pawel.swiszcz.com",
+  "version": 1,
   "shell-version": [
     "41"
   ],
-  "version": 1,
   "url": "https://github.com/pawelswiszcz/Avatar-Gnome-Shell-Extension"
 }
