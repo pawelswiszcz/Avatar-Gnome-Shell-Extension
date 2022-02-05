@@ -1,7 +1,7 @@
 {
-  "uuid": "avatar-dev@pawel.swiszcz.com",
+  "uuid": "avatar@pawel.swiszcz.com",
   "name": "Avatar",
-  "description": "Add avatar to settings panel",
+  "description": "Adds an avatar to the panel. Controllability: shades, buttons (turn notifications on/off, sleep, off), visibility of username and hostname",
   "version": 1,
   "shell-version": [
     "41"
