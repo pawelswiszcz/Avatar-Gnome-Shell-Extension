@@ -40,15 +40,30 @@ const AvatarSettings = new GObject.Class({
         this.attach($gtkSwitchUserName.gtkLabel, 0, 2, 1, 1);
         this.attach($gtkSwitchUserName.toggle, 1, 2, 1, 1);
 
+        let $gtkSwitchUserSystemName = this.getSwitch('show-system-name', 'Show user system name:');
+
+        this.attach($gtkSwitchUserSystemName.gtkLabel, 0, 3, 1, 1);
+        this.attach($gtkSwitchUserSystemName.toggle, 1, 3, 1, 1);
+
         let $gtkSwitchShowDarkStyle = this.getSwitch('name-style-dark', 'User name dark style:');
 
-        this.attach($gtkSwitchShowDarkStyle.gtkLabel, 0, 3, 1, 1);
-        this.attach($gtkSwitchShowDarkStyle.toggle, 1, 3, 1, 1);
+        this.attach($gtkSwitchShowDarkStyle.gtkLabel, 0, 4, 1, 1);
+        this.attach($gtkSwitchShowDarkStyle.toggle, 1, 4, 1, 1);
 
         let $gtkSwitchShowShadowStyle = this.getSwitch('avatar-shadow', 'Add shadow to avatar:');
 
-        this.attach($gtkSwitchShowShadowStyle.gtkLabel, 0, 4, 1, 1);
-        this.attach($gtkSwitchShowShadowStyle.toggle, 1, 4, 1, 1);
+        this.attach($gtkSwitchShowShadowStyle.gtkLabel, 0, 5, 1, 1);
+        this.attach($gtkSwitchShowShadowStyle.toggle, 1, 5, 1, 1);
+
+        let $gtkSwitchShowUserNameShadowStyle = this.getSwitch('avatar-shadow-user-name', 'Add shadow to user name:');
+
+        this.attach($gtkSwitchShowUserNameShadowStyle.gtkLabel, 0, 6, 1, 1);
+        this.attach($gtkSwitchShowUserNameShadowStyle.toggle, 1, 6, 1, 1);
+
+        let $gtkSwitchShowSystemButtons = this.getSwitch('show-buttons', 'Add system buttons:');
+
+        this.attach($gtkSwitchShowSystemButtons.gtkLabel, 0, 7, 1, 1);
+        this.attach($gtkSwitchShowSystemButtons.toggle, 1, 7, 1, 1);
     },
 
     getSwitch: function ($key, $text) {
