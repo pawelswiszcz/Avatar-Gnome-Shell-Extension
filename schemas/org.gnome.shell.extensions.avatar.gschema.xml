@@ -12,6 +12,11 @@
       <summary>Show user name first and last</summary>
       <description>Show user name first and last</description>
     </key>
+    <key name="show-system-name" type="b">
+      <default>true</default>
+      <summary>Show system name</summary>
+      <description>Show system name</description>
+    </key>
     <key name="name-style-dark" type="b">
       <default>true</default>
       <summary>Login dark style</summary>
@@ -21,6 +26,16 @@
       <default>true</default>
       <summary>Add shadow to avatar</summary>
       <description>Add shadow to avatar</description>
+    </key>
+    <key name="avatar-shadow-user-name" type="b">
+      <default>true</default>
+      <summary>Add shadow to user name</summary>
+      <description>Add shadow to user name</description>
+    </key>
+    <key name="show-buttons" type="b">
+      <default>true</default>
+      <summary>Show system buttons</summary>
+      <description>Show system buttons</description>
     </key>
   </schema>
 </schemalist>
