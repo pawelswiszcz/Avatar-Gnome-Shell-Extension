@@ -61,7 +61,10 @@ const UserWidget = GObject.registerClass(class UserWidget extends St.BoxLayout {
         addShadow = false,
         addShadowUserName = false,
         addSystemName = false,
-        addSystemButtons = false
+        addSystemButtons = false,
+        systemNamePosition = 1,
+        systemButtonsPosition = 1,
+        systemButtonsIconSize = 1
     ) {
         // If user is null, that implies a username-based login authorization.
         this._user = user;
@@ -84,7 +87,7 @@ const UserWidget = GObject.registerClass(class UserWidget extends St.BoxLayout {
 
         this.connect('destroy', this._onDestroy.bind(this));
 
-        this._avatar = new Avatar(user, {iconSize: 128});
+        this._avatar = new Avatar(user);
         this._avatar.x_align = Clutter.ActorAlign.CENTER;
 
 
@@ -117,29 +120,31 @@ const UserWidget = GObject.registerClass(class UserWidget extends St.BoxLayout {
                 labelBox.add_child(this._label);
 
                 if (addSystemName) {
+                    userSystemLabelWidget.style = "margin-left:" + systemNamePosition + "px";
                     labelBox.add_child(userSystemLabelWidget);
                 }
 
                 this.add_child(labelBox);
             }
 
-
             if (addSystemButtons) {
 
                 let buttonClass = vertical ? 'user-box-notification vertical' : 'user-box-notification horizontal';
 
                 let notificationBox = new St.BoxLayout({
-                    vertical: false, x_align: Clutter.ActorAlign.CENTER, style_class: buttonClass,
+                    vertical: false,
+                    x_align: Clutter.ActorAlign.END,
+                    style_class: buttonClass,
                 });
 
-                let icon = this.getNotificationIcon();
+                notificationBox.style = "margin-left:" + systemButtonsPosition + "px";
+
                 let dndSwitch = new DoNotDisturbSwitch();
                 let dndButton = new St.Button({
                     style_class: 'dnd-button',
                     can_focus: true,
                     toggle_mode: true,
                     child: dndSwitch,
-                    label_actor: icon,
                     x_align: Clutter.ActorAlign.CENTER,
                     y_align: Clutter.ActorAlign.CENTER,
                 });
@@ -149,11 +154,10 @@ const UserWidget = GObject.registerClass(class UserWidget extends St.BoxLayout {
                 );
 
 
-                //notificationBox.add_child(icon);
                 notificationBox.add_child(dndButton);
-                notificationBox.add_child(this.getSystemButton());
-                notificationBox.add_child(this.getSuspendButton());
-                notificationBox.add_child(this.getPowerButton());
+                notificationBox.add_child(this.getSystemButton(systemButtonsIconSize));
+                notificationBox.add_child(this.getSuspendButton(systemButtonsIconSize));
+                notificationBox.add_child(this.getPowerButton(systemButtonsIconSize));
 
                 this.add_child(notificationBox);
             }
@@ -170,7 +174,7 @@ const UserWidget = GObject.registerClass(class UserWidget extends St.BoxLayout {
         this._updateUser();
     }
 
-    getSystemButton() {
+    getSystemButton(systemButtonsIconSize) {
         let systemButton = new St.Button({
             style_class: 'bttn system-button',
             reactive: true,
@@ -179,13 +183,13 @@ const UserWidget = GObject.registerClass(class UserWidget extends St.BoxLayout {
             x_align: Clutter.ActorAlign.CENTER,
             y_align: Clutter.ActorAlign.CENTER,
         });
-        systemButton.set_child(this.getSystemIcon());
+        systemButton.set_child(this.getSystemIcon(systemButtonsIconSize));
         systemButton.connect('button-press-event', this.openUserAccount);
 
         return systemButton;
     }
 
-    getPowerButton() {
+    getPowerButton(systemButtonsIconSize) {
         let powerButton = new St.Button({
             style_class: 'bttn system-power-button',
             reactive: true,
@@ -194,13 +198,13 @@ const UserWidget = GObject.registerClass(class UserWidget extends St.BoxLayout {
             x_align: Clutter.ActorAlign.CENTER,
             y_align: Clutter.ActorAlign.CENTER,
         });
-        powerButton.set_child(this.getPowerOffIcon());
+        powerButton.set_child(this.getPowerOffIcon(systemButtonsIconSize));
         powerButton.connect('button-press-event', this.closeSystem);
 
         return powerButton;
     }
 
-    getSuspendButton() {
+    getSuspendButton(systemButtonsIconSize) {
         let suspendButton = new St.Button({
             style_class: 'bttn system-power-button',
             reactive: true,
@@ -209,7 +213,7 @@ const UserWidget = GObject.registerClass(class UserWidget extends St.BoxLayout {
             x_align: Clutter.ActorAlign.CENTER,
             y_align: Clutter.ActorAlign.CENTER,
         });
-        suspendButton.set_child(this.getSuspendIcon());
+        suspendButton.set_child(this.getSuspendIcon(systemButtonsIconSize));
         suspendButton.connect('button-press-event', this.suspendSystem);
 
         return suspendButton;
@@ -227,27 +231,27 @@ const UserWidget = GObject.registerClass(class UserWidget extends St.BoxLayout {
         Util.spawn(['/bin/bash', '-c', "systemctl suspend"]);
     }
 
-    getNotificationIcon() {
+    getNotificationIcon(systemButtonsIconSize) {
         return new St.Icon({
-            icon_name: 'preferences-system-notifications-symbolic', iconSize: 35,
+            icon_name: 'preferences-system-notifications-symbolic', iconSize: systemButtonsIconSize,
         });
     }
 
-    getPowerOffIcon() {
+    getPowerOffIcon(systemButtonsIconSize) {
         return new St.Icon({
-            icon_name: 'system-shutdown-symbolic', iconSize: 35,
+            icon_name: 'system-shutdown-symbolic', iconSize: systemButtonsIconSize,
         });
     }
 
-    getSystemIcon() {
+    getSystemIcon(systemButtonsIconSize) {
         return new St.Icon({
-            icon_name: 'preferences-system-symbolic', iconSize: 35,
+            icon_name: 'preferences-system-symbolic', iconSize: systemButtonsIconSize,
         });
     }
 
-    getSuspendIcon() {
+    getSuspendIcon(systemButtonsIconSize) {
         return new St.Icon({
-            icon_name: 'media-playback-pause-symbolic', iconSize: 35,
+            icon_name: 'media-playback-pause-symbolic', iconSize: systemButtonsIconSize,
         });
     }
 
@@ -318,6 +322,20 @@ class Extension {
             resetAfterChange();
             _that.updateExtensionAppearance();
         });
+
+        this.settings.connect('changed::system-name-position', function () {
+            resetAfterChange();
+            _that.updateExtensionAppearance();
+        });
+        this.settings.connect('changed::buttons-position', function () {
+            resetAfterChange();
+            _that.updateExtensionAppearance();
+        });
+        this.settings.connect('changed::buttons-icon-size', function () {
+            resetAfterChange();
+            _that.updateExtensionAppearance();
+        });
+
         this.updateExtensionAppearance();
     }
 
@@ -369,7 +387,10 @@ class Extension {
             this.settings.get_boolean('avatar-shadow'),
             this.settings.get_boolean('avatar-shadow-user-name'),
             this.settings.get_boolean('show-system-name'),
-            this.settings.get_boolean('show-buttons')
+            this.settings.get_boolean('show-buttons'),
+            this.settings.get_int('system-name-position'),
+            this.settings.get_int('buttons-position'),
+            this.settings.get_int('buttons-icon-size'),
         );
 
         avatar._updateUser();
@@ -388,7 +409,10 @@ class Extension {
             this.settings.get_boolean('avatar-shadow'),
             this.settings.get_boolean('avatar-shadow-user-name'),
             this.settings.get_boolean('show-system-name'),
-            this.settings.get_boolean('show-buttons')
+            this.settings.get_boolean('show-buttons'),
+            this.settings.get_int('system-name-position'),
+            this.settings.get_int('buttons-position'),
+            this.settings.get_int('buttons-icon-size'),
         );
 
         avatar._updateUser();
