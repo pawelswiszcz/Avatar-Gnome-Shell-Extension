@@ -17,6 +17,10 @@
       <summary>Show system name</summary>
       <description>Show system name</description>
     </key>
+    <key name="system-name-position" type="i">
+      <default>0</default>
+      <summary>Set Position</summary>
+    </key>
     <key name="name-style-dark" type="b">
       <default>true</default>
       <summary>Login dark style</summary>
@@ -36,6 +40,14 @@
       <default>true</default>
       <summary>Show system buttons</summary>
       <description>Show system buttons</description>
+    </key>
+    <key name="buttons-position" type="i">
+      <default>0</default>
+      <summary>Set Position</summary>
+    </key>
+    <key name="buttons-icon-size" type="i">
+      <default>0</default>
+      <summary>Icon size</summary>
     </key>
   </schema>
 </schemalist>

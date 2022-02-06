@@ -30,40 +30,27 @@ const AvatarSettings = new GObject.Class({
         this.margin_top = 32;
         this.margin_bottom = 32;
 
-        let $gtkSwitchHmode = this.getSwitch('horizontal-mode', 'Enable horizontal mode:');
 
-        this.attach($gtkSwitchHmode.gtkLabel, 0, 1, 1, 1);
-        this.attach($gtkSwitchHmode.toggle, 1, 1, 1, 1);
+        let prefsButtons = [
+            this.getSwitch('horizontal-mode', 'Enable horizontal mode:'),
+            this.getSwitch('show-name', 'Show user name:'),
+            this.getSwitch('show-system-name', 'Show user system name:'),
+            this.getSpinButton('system-name-position', 'System name position:'),
+            this.getSwitch('name-style-dark', 'User name dark style:'),
+            this.getSwitch('avatar-shadow', 'Add shadow to avatar:'),
+            this.getSwitch('avatar-shadow-user-name', 'Add shadow to user name:'),
+            this.getSwitch('show-buttons', 'Add system buttons:'),
+            this.getSpinButton('buttons-position', 'Buttons position:'),
+            this.getSpinButton('buttons-icon-size', 'Buttons icon size:')
+        ];
 
-        let $gtkSwitchUserName = this.getSwitch('show-name', 'Show user name:');
+        let i = 1;
 
-        this.attach($gtkSwitchUserName.gtkLabel, 0, 2, 1, 1);
-        this.attach($gtkSwitchUserName.toggle, 1, 2, 1, 1);
-
-        let $gtkSwitchUserSystemName = this.getSwitch('show-system-name', 'Show user system name:');
-
-        this.attach($gtkSwitchUserSystemName.gtkLabel, 0, 3, 1, 1);
-        this.attach($gtkSwitchUserSystemName.toggle, 1, 3, 1, 1);
-
-        let $gtkSwitchShowDarkStyle = this.getSwitch('name-style-dark', 'User name dark style:');
-
-        this.attach($gtkSwitchShowDarkStyle.gtkLabel, 0, 4, 1, 1);
-        this.attach($gtkSwitchShowDarkStyle.toggle, 1, 4, 1, 1);
-
-        let $gtkSwitchShowShadowStyle = this.getSwitch('avatar-shadow', 'Add shadow to avatar:');
-
-        this.attach($gtkSwitchShowShadowStyle.gtkLabel, 0, 5, 1, 1);
-        this.attach($gtkSwitchShowShadowStyle.toggle, 1, 5, 1, 1);
-
-        let $gtkSwitchShowUserNameShadowStyle = this.getSwitch('avatar-shadow-user-name', 'Add shadow to user name:');
-
-        this.attach($gtkSwitchShowUserNameShadowStyle.gtkLabel, 0, 6, 1, 1);
-        this.attach($gtkSwitchShowUserNameShadowStyle.toggle, 1, 6, 1, 1);
-
-        let $gtkSwitchShowSystemButtons = this.getSwitch('show-buttons', 'Add system buttons:');
-
-        this.attach($gtkSwitchShowSystemButtons.gtkLabel, 0, 7, 1, 1);
-        this.attach($gtkSwitchShowSystemButtons.toggle, 1, 7, 1, 1);
+        for (const prefsButtonsKey in prefsButtons) {
+            this.attach(prefsButtons[prefsButtonsKey].gtkLabel, 0, i, 1, 1);
+            this.attach(prefsButtons[prefsButtonsKey].toggle, 1, i, 1, 1);
+            i++;
+        }
     },
 
     getSwitch: function ($key, $text) {
@@ -75,7 +62,7 @@ const AvatarSettings = new GObject.Class({
         let value = this.settings.get_boolean($key);
 
         //Create horizontal mode and default values toggleable switches
-        toggle = new Gtk.Switch({ halign: Gtk.Align.END });
+        toggle = new Gtk.Switch({halign: Gtk.Align.END});
 
         //Set it's state to gschemas' default
         toggle.set_state(value);
@@ -87,18 +74,37 @@ const AvatarSettings = new GObject.Class({
             halign: Gtk.Align.START
         });
 
-        /*Connects the change of state of the switch with the change of
-        gschemas' value*/
-
-        let func =  function (w) {
+        let func = function (w) {
             this.settings.set_boolean($key, !value);
             value = !value;
         };
 
         toggle.connect('state-set', func.bind(this));
 
-        return { toggle, gtkLabel };
+        return {toggle, gtkLabel};
     },
+    getSpinButton: function ($key, $text) {
+        let toggle = new Gtk.SpinButton({halign: Gtk.Align.END});
+        toggle.set_sensitive(true);
+        toggle.set_range(1, 400);
+        toggle.set_value(this.settings.get_int($key));
+        toggle.set_increments(1, 2);
+
+        let settings = this.settings;
+
+        let func = function (w) {
+            settings.set_int($key, w.get_value_as_int());
+        };
+
+        toggle.connect('value-changed', func.bind(this));
+        //Creates labels;
+        let gtkLabel = new Gtk.Label({
+            label: $text,
+            hexpand: true,
+            halign: Gtk.Align.START
+        });
+        return {toggle, gtkLabel};
+    }
 
 });
 
