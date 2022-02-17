@@ -1,17 +1,13 @@
 # Avatar-Gnome-Shell-Extension
 
+Avaliable on gnome shell extension pages <a href="https://extensions.gnome.org/extension/4782/avatar/">https://extensions.gnome.org/extension/4782/avatar/</a>
+
 Adds an avatar to the top panel. Suports Gnome 41
 
-Horizontal and vertical Orientation can be set in options
+# Screenshots
 
-It was based on https://github.com/GustavoPeredo/Big-Avatar-Gnome-Shell-Extension
+<img src="assets/2.png">
 
-
-# Screens
-
-<img src="assets/9.png">
+# Options to customize:
 
 <img src="assets/1.png">
-
-
-More screens in <a href="https://github.com/pawelswiszcz/Avatar-Gnome-Shell-Extension/tree/master/assets">assets</a> directory
