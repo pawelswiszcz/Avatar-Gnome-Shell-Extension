@@ -18,14 +18,14 @@
 
 /* exported init */
 
-const {AccountsService, GObject, St, Clutter, GLib, Gio} = imports.gi;
+const { AccountsService, GObject, St, Clutter, GLib, Gio, Atk } = imports.gi;
 
 const ExtensionUtils = imports.misc.extensionUtils;
 const Main = imports.ui.main;
 const Util = imports.misc.util;
 const PopupMenu = imports.ui.popupMenu;
-
-const {Avatar, UserWidgetLabel} = imports.ui.userWidget;
+const Mpris = imports.ui.mpris;
+const { Avatar, UserWidgetLabel } = imports.ui.userWidget;
 
 
 const _ = ExtensionUtils.gettext;
@@ -34,6 +34,8 @@ const Me = ExtensionUtils.getCurrentExtension();
 
 //Creates temporary iconMenuItem variable
 let iconMenuItem = null;
+
+let mediaMenuItem = null;
 
 
 const DoNotDisturbSwitch = GObject.registerClass(class DoNotDisturbSwitch extends PopupMenu.Switch {
@@ -52,6 +54,133 @@ const DoNotDisturbSwitch = GObject.registerClass(class DoNotDisturbSwitch extend
         });
     }
 });
+
+const NotificationBox = GObject.registerClass(
+    {
+        Properties: {
+            'active': GObject.ParamSpec.boolean('active', 'active', 'active',
+                GObject.ParamFlags.READWRITE,
+                false),
+            'sensitive': GObject.ParamSpec.boolean('sensitive', 'sensitive', 'sensitive',
+                GObject.ParamFlags.READWRITE,
+                true),
+        },
+
+    },
+
+    class NotificationBox extends St.BoxLayout {
+
+        _init(buttonClass) {
+            super._init({
+                vertical: false,
+                x_align: Clutter.ActorAlign.CENTER,
+                style_class: buttonClass,
+                track_hover: true,
+                reactive: true,
+                can_focus: true,
+            });
+            /* not used for now*/
+            //this.add_style_class_name('system-action-icon');
+            /*this.bind_property('hover', this, 'active', GObject.BindingFlags.SYNC_CREATE);
+            this.opacity = 200;*/
+            // this.add_style_class_name('message-body');
+        }
+
+        get active() {
+            return this._active;
+        }
+
+        set active(active) {
+            let activeChanged = active != this.active;
+            if (activeChanged) {
+                this._active = active;
+                if (active) {
+                    //this.add_style_class_name('selected');
+                    this.opacity = 255;
+                    if (this.can_focus) {
+                        this.grab_key_focus();
+                    }
+
+                } else {
+                    this.opacity = 200;
+                    //this.remove_style_class_name('selected');
+                    // Remove the CSS active state if the user press the button and
+                    // while holding moves to another menu item, so we don't paint all items.
+                    // The correct behaviour would be to set the new item with the CSS
+                    // active state as well, but button-press-event is not triggered,
+                    // so we should track it in our own, which would involve some work
+                    // in the container
+                    //this.remove_style_pseudo_class('active');
+                }
+                this.notify('active');
+            }
+        }
+
+    });
+
+const SystemButton = GObject.registerClass(
+    {
+        Properties: {
+            'active': GObject.ParamSpec.boolean('active', 'active', 'active',
+                GObject.ParamFlags.READWRITE,
+                false),
+            'sensitive': GObject.ParamSpec.boolean('sensitive', 'sensitive', 'sensitive',
+                GObject.ParamFlags.READWRITE,
+                true),
+        },
+
+    },
+
+    class SystemButton extends St.Button {
+
+        _init() {
+            super._init({
+                style_class: 'bttn system-button',
+                reactive: true,
+                can_focus: true,
+                track_hover: true,
+                x_align: Clutter.ActorAlign.CENTER,
+                y_align: Clutter.ActorAlign.CENTER,
+                x_expand: true,
+            });
+            this.add_style_class_name('popup-menu-item');
+            this.bind_property('hover', this, 'active', GObject.BindingFlags.SYNC_CREATE);
+            this.opacity = 230;
+        }
+
+        get active() {
+            return this._active;
+        }
+
+        set active(active) {
+            let activeChanged = active != this.active;
+            if (activeChanged) {
+                this._active = active;
+                if (active) {
+                    this.add_style_class_name('selected');
+                    this.opacity = 255;
+                    if (this.can_focus) {
+                        this.grab_key_focus();
+                    }
+
+                } else {
+                    this.opacity = 230;
+                    this.remove_style_class_name('selected');
+                    // Remove the CSS active state if the user press the button and
+                    // while holding moves to another menu item, so we don't paint all items.
+                    // The correct behaviour would be to set the new item with the CSS
+                    // active state as well, but button-press-event is not triggered,
+                    // so we should track it in our own, which would involve some work
+                    // in the container
+                    this.remove_style_pseudo_class('active');
+                }
+                this.notify('active');
+            }
+        }
+
+    });
+
+
 const UserWidget = GObject.registerClass(class UserWidget extends St.BoxLayout {
     _init(
         user,
@@ -64,7 +193,9 @@ const UserWidget = GObject.registerClass(class UserWidget extends St.BoxLayout {
         addSystemButtons = false,
         systemNamePosition = 1,
         systemButtonsPosition = 1,
-        systemButtonsIconSize = 1
+        systemButtonsIconSize = 1,
+        useSystemButtonsColor = false,
+        systemButtonsColor = false
     ) {
         // If user is null, that implies a username-based login authorization.
         this._user = user;
@@ -131,13 +262,15 @@ const UserWidget = GObject.registerClass(class UserWidget extends St.BoxLayout {
 
                 let buttonClass = vertical ? 'user-box-notification vertical' : 'user-box-notification horizontal';
 
-                let notificationBox = new St.BoxLayout({
-                    vertical: false,
-                    x_align: Clutter.ActorAlign.END,
-                    style_class: buttonClass,
-                });
+                let notificationBox = new NotificationBox(buttonClass);
 
-                notificationBox.style = "margin-left:" + systemButtonsPosition + "px";
+                let notificationBoxStyle = "margin-left:" + systemButtonsPosition + "px;";
+
+                if (useSystemButtonsColor && systemButtonsColor) {
+                    notificationBoxStyle += "background-color:" + systemButtonsColor +";";
+                }
+
+                notificationBox.style = notificationBoxStyle;
 
                 let dndSwitch = new DoNotDisturbSwitch();
                 let dndButton = new St.Button({
@@ -175,14 +308,7 @@ const UserWidget = GObject.registerClass(class UserWidget extends St.BoxLayout {
     }
 
     getSystemButton(systemButtonsIconSize) {
-        let systemButton = new St.Button({
-            style_class: 'bttn system-button',
-            reactive: true,
-            can_focus: true,
-            track_hover: true,
-            x_align: Clutter.ActorAlign.CENTER,
-            y_align: Clutter.ActorAlign.CENTER,
-        });
+        let systemButton = new SystemButton();
         systemButton.set_child(this.getSystemIcon(systemButtonsIconSize));
         systemButton.connect('button-press-event', this.openUserAccount);
 
@@ -190,14 +316,7 @@ const UserWidget = GObject.registerClass(class UserWidget extends St.BoxLayout {
     }
 
     getPowerButton(systemButtonsIconSize) {
-        let powerButton = new St.Button({
-            style_class: 'bttn system-power-button',
-            reactive: true,
-            can_focus: true,
-            track_hover: true,
-            x_align: Clutter.ActorAlign.CENTER,
-            y_align: Clutter.ActorAlign.CENTER,
-        });
+        let powerButton = new SystemButton();
         powerButton.set_child(this.getPowerOffIcon(systemButtonsIconSize));
         powerButton.connect('button-press-event', this.closeSystem);
 
@@ -205,14 +324,7 @@ const UserWidget = GObject.registerClass(class UserWidget extends St.BoxLayout {
     }
 
     getSuspendButton(systemButtonsIconSize) {
-        let suspendButton = new St.Button({
-            style_class: 'bttn system-power-button',
-            reactive: true,
-            can_focus: true,
-            track_hover: true,
-            x_align: Clutter.ActorAlign.CENTER,
-            y_align: Clutter.ActorAlign.CENTER,
-        });
+        let suspendButton = new SystemButton();
         suspendButton.set_child(this.getSuspendIcon(systemButtonsIconSize));
         suspendButton.connect('button-press-event', this.suspendSystem);
 
@@ -283,6 +395,11 @@ function resetAfterChange() {
     if (iconMenuItem) {
         iconMenuItem.destroy();
     }
+
+    if (mediaMenuItem) {
+        mediaMenuItem.destroy();
+    }
+
 }
 
 class Extension {
@@ -294,47 +411,30 @@ class Extension {
         this.settings = ExtensionUtils.getSettings('org.gnome.shell.extensions.avatar');
 
         let _that = this;
-        this.settings.connect('changed::horizontal-mode', function () {
-            resetAfterChange();
-            _that.updateExtensionAppearance();
-        });
-        this.settings.connect('changed::show-name', function () {
-            resetAfterChange();
-            _that.updateExtensionAppearance();
-        });
-        this.settings.connect('changed::name-style-dark', function () {
-            resetAfterChange();
-            _that.updateExtensionAppearance();
-        });
-        this.settings.connect('changed::avatar-shadow', function () {
-            resetAfterChange();
-            _that.updateExtensionAppearance();
-        });
-        this.settings.connect('changed::avatar-shadow-user-name', function () {
-            resetAfterChange();
-            _that.updateExtensionAppearance();
-        });
-        this.settings.connect('changed::show-system-name', function () {
-            resetAfterChange();
-            _that.updateExtensionAppearance();
-        });
-        this.settings.connect('changed::show-buttons', function () {
-            resetAfterChange();
-            _that.updateExtensionAppearance();
-        });
 
-        this.settings.connect('changed::system-name-position', function () {
-            resetAfterChange();
-            _that.updateExtensionAppearance();
-        });
-        this.settings.connect('changed::buttons-position', function () {
-            resetAfterChange();
-            _that.updateExtensionAppearance();
-        });
-        this.settings.connect('changed::buttons-icon-size', function () {
-            resetAfterChange();
-            _that.updateExtensionAppearance();
-        });
+        let changedElements = [
+            'changed::horizontal-mode',
+            'changed::show-name',
+            'changed::name-style-dark',
+            'changed::avatar-shadow',
+            'changed::avatar-shadow-user-name',
+            'changed::show-system-name',
+            'changed::show-buttons',
+            'changed::system-name-position',
+            'changed::buttons-position',
+            'changed::buttons-icon-size',
+            'changed::show-media-center',
+            'changed::set-custom-panel-menu-width',
+            'changed::custom-buttons-background',
+            'changed::buttons-background'
+        ];
+
+        for (const i in changedElements) {
+            this.settings.connect(changedElements[i], function () {
+                resetAfterChange();
+                _that.updateExtensionAppearance();
+            });
+        }
 
         this.updateExtensionAppearance();
     }
@@ -347,7 +447,7 @@ class Extension {
 
     updateExtensionAppearance() {
         //Creates new PopupMenuItem
-        this.iconMenuItem = new PopupMenu.PopupMenuItem('');
+        this.iconMenuItem = new PopupMenu.PopupMenuItem('', { hover: false });
         //this.iconMenuItem.connect('button-press-event', this.openUserAccount);
 
         let horizontalMode = this.settings.get_boolean('horizontal-mode');
@@ -367,6 +467,12 @@ class Extension {
         var userManager = AccountsService.UserManager.get_default();
         var user = userManager.get_user(GLib.get_user_name());
 
+        let panelWidth = this.settings.get_int('set-custom-panel-menu-width');
+
+        if (panelWidth > 0) {
+            Main.panel.statusArea['aggregateMenu'].menu.actor.width = this.settings.get_int('set-custom-panel-menu-width');
+        }
+
         if (horizontalMode) {
             let avatar = this.setHorizontalStyle(user);
             this.iconMenuItem.actor.get_last_child().add_child(avatar);
@@ -374,6 +480,22 @@ class Extension {
             let avatar = this.setVerticalStyle(user);
             this.iconMenuItem.actor.get_last_child().add_child(avatar);
         }
+
+        if (this.settings.get_boolean('show-media-center')) {
+            this._mediaSectionMenuItem = new PopupMenu.PopupMenuItem('', { hover: false });
+            Main.panel.statusArea.aggregateMenu.menu.addMenuItem(this._mediaSectionMenuItem, 1);
+
+            this._mediaSection = new Mpris.MediaSection();
+
+            this._mediaSectionMenuItem.add_child(new St.BoxLayout({
+                x_expand: true, y_expand: true, vertical: true, style_class: "multimedia-box",
+            }));
+
+            this._mediaSectionMenuItem.actor.get_last_child().add_child(this._mediaSection);
+
+            mediaMenuItem = this._mediaSectionMenuItem;
+        }
+
     }
 
     setHorizontalStyle(user) {
@@ -391,6 +513,8 @@ class Extension {
             this.settings.get_int('system-name-position'),
             this.settings.get_int('buttons-position'),
             this.settings.get_int('buttons-icon-size'),
+            this.settings.get_boolean('custom-buttons-background'),
+            this.settings.get_string('buttons-background')
         );
 
         avatar._updateUser();
@@ -413,6 +537,8 @@ class Extension {
             this.settings.get_int('system-name-position'),
             this.settings.get_int('buttons-position'),
             this.settings.get_int('buttons-icon-size'),
+            this.settings.get_boolean('custom-buttons-background'),
+            this.settings.get_string('buttons-background')
         );
 
         avatar._updateUser();

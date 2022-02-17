@@ -49,5 +49,24 @@
       <default>0</default>
       <summary>Icon size</summary>
     </key>
+    <key name="show-media-center" type="b">
+      <default>true</default>
+      <summary>Show media center</summary>
+      <description>Show media center</description>
+    </key>
+      <key name="set-custom-panel-menu-width" type="i">
+      <default>0</default>
+      <summary>Set Panel Menu width</summary>
+    </key>
+    <key name="custom-buttons-background" type="b">
+      <default>false</default>
+      <summary>Use custom buttons background color</summary>
+      <description>Use custom buttons background color</description>
+    </key>
+    <key name="buttons-background" type="s">
+      <default>""</default>
+      <summary>buttons-background</summary>
+      <description>buttons-background</description>
+    </key>
   </schema>
 </schemalist>
