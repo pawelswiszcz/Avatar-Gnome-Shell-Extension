@@ -1,5 +1,5 @@
 {
-  "uuid": "avatar@pawel.swiszcz.com",
+  "uuid": "avatar-dev@pawel.swiszcz.com",
   "name": "Avatar",
   "description": "Adds an avatar to the panel. Controllability: shades, buttons (turn notifications on/off, sleep, off), visibility of username and hostname",
   "version": 1,
