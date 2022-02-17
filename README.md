@@ -10,4 +10,4 @@ Adds an avatar to the top panel. Suports Gnome 41
 
 # Options to customize:
 
-<img src="assets/1.png">
+<img src="assets/options.png">
