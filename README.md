@@ -1,6 +1,8 @@
 # Avatar-Gnome-Shell-Extension
 
-Avaliable on gnome shell extension pages <a href="https://extensions.gnome.org/extension/4782/avatar/">https://extensions.gnome.org/extension/4782/avatar/</a>
+Avaliable on EGO
+
+[<img src="assets/get-it-on-ego.svg height="100" align="right">](https://extensions.gnome.org/extension/4782/avatar/)
 
 Adds an avatar to the top panel. Suports Gnome 41
 
