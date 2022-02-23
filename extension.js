@@ -267,7 +267,7 @@ const UserWidget = GObject.registerClass(class UserWidget extends St.BoxLayout {
                 let notificationBoxStyle = "margin-left:" + systemButtonsPosition + "px;";
 
                 if (useSystemButtonsColor && systemButtonsColor) {
-                    notificationBoxStyle += "background-color:" + systemButtonsColor +";";
+                    notificationBoxStyle += "background-color:" + systemButtonsColor + ";";
                 }
 
                 notificationBox.style = notificationBoxStyle;
@@ -432,6 +432,7 @@ class Extension {
         for (const i in changedElements) {
             this.settings.connect(changedElements[i], function () {
                 resetAfterChange();
+                Main.panel.statusArea.aggregateMenu.menu.open();
                 _that.updateExtensionAppearance();
             });
         }
@@ -447,7 +448,11 @@ class Extension {
 
     updateExtensionAppearance() {
         //Creates new PopupMenuItem
-        this.iconMenuItem = new PopupMenu.PopupMenuItem('', { hover: false });
+        this.iconMenuItem = new PopupMenu.PopupMenuItem('', {
+            hover: false,
+            reactive: false,
+            can_focus: false,
+        });
         //this.iconMenuItem.connect('button-press-event', this.openUserAccount);
 
         let horizontalMode = this.settings.get_boolean('horizontal-mode');
