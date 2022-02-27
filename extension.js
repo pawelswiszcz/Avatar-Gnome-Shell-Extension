@@ -332,15 +332,15 @@ const UserWidget = GObject.registerClass(class UserWidget extends St.BoxLayout {
     }
 
     openUserAccount() {
-        Util.spawn(["/usr/bin/env bash", '-c', "gnome-control-center user-accounts"]);
+        Util.spawn(['gnome-control-center', 'user-accounts']);
     }
 
     closeSystem() {
-        Util.spawn(["/usr/bin/env bash", '-c', "gnome-session-quit --power-off"]);
+        Util.spawn(['gnome-session-quit', '--power-off']);
     }
 
     suspendSystem() {
-        Util.spawn(["/usr/bin/env bash", '-c', "systemctl suspend"]);
+        Util.spawn(['systemctl', 'suspend']);
     }
 
     getNotificationIcon(systemButtonsIconSize) {
