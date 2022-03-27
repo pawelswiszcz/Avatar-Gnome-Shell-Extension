@@ -4,7 +4,8 @@
   "description": "Adds an avatar to the panel. Controllability: shades, buttons (turn notifications on/off, sleep, off), visibility of username and hostname",
   "version": 1,
   "shell-version": [
-    "41"
+    "41",
+    "42"
   ],
   "url": "https://github.com/pawelswiszcz/Avatar-Gnome-Shell-Extension"
 }
