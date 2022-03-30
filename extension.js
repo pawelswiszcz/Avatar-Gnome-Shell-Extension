@@ -486,6 +486,8 @@ class Extension {
             this.iconMenuItem.actor.get_last_child().add_child(avatar);
         }
 
+        let calendarMpris = Main.panel.statusArea.dateMenu._messageList._mediaSection;
+
         if (this.settings.get_boolean('show-media-center')) {
             this._mediaSectionMenuItem = new PopupMenu.PopupMenuItem('', { hover: false });
             Main.panel.statusArea.aggregateMenu.menu.addMenuItem(this._mediaSectionMenuItem, 1);
@@ -499,8 +501,13 @@ class Extension {
             this._mediaSectionMenuItem.actor.get_last_child().add_child(this._mediaSection);
 
             mediaMenuItem = this._mediaSectionMenuItem;
-        }
 
+            calendarMpris._shouldShow = () => false;
+            calendarMpris.hide ();
+        } else {
+	    calendarMpris._shouldShow = () => true;
+	    calendarMpris.show ();
+	}
     }
 
     setHorizontalStyle(user) {
