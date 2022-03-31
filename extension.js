@@ -503,10 +503,10 @@ class Extension {
             mediaMenuItem = this._mediaSectionMenuItem;
 
             calendarMpris._shouldShow = () => false;
-            calendarMpris.hide ();
+            calendarMpris.hide();
         } else {
             calendarMpris._shouldShow = () => true;
-            calendarMpris.show ();
+            calendarMpris.show();
         }
     }
 
