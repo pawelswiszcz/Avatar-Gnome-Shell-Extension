@@ -505,9 +505,9 @@ class Extension {
             calendarMpris._shouldShow = () => false;
             calendarMpris.hide ();
         } else {
-	    calendarMpris._shouldShow = () => true;
-	    calendarMpris.show ();
-	}
+            calendarMpris._shouldShow = () => true;
+            calendarMpris.show ();
+        }
     }
 
     setHorizontalStyle(user) {
