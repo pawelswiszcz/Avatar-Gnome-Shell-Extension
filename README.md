@@ -7,13 +7,13 @@ Available on gnome EGO:
 [<img src="assets/get-it-on-ego.svg" height="100">](https://extensions.gnome.org/extension/4782/avatar/)
 
 # Changelog
-v 14
+v 12
 
 - Refactor UserWidget
 
 - Changed Preferences window to more modern
 
-v 13
+v 11
 - Removed Mpris Media center from calendar popup.
 
 
