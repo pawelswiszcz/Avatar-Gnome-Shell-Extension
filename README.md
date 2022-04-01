@@ -11,7 +11,7 @@ v 14
 
 - Refactor UserWidget
 
-- Change Preferences window to more modern
+- Changed Preferences window to more modern
 
 v 13
 - Removed Mpris Media center from calendar popup.
