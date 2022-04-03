@@ -7,6 +7,10 @@ Available on gnome EGO:
 [<img src="assets/get-it-on-ego.svg" height="100">](https://extensions.gnome.org/extension/4782/avatar/)
 
 # Changelog
+v 13
+
+- Fix default mpris notifications not showing when extensions' mpris is enabled and extension is disabled
+
 v 12
 
 - Refactor UserWidget
