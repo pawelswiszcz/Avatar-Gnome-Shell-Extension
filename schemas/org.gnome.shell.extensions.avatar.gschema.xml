@@ -54,7 +54,12 @@
       <summary>Show media center</summary>
       <description>Show media center</description>
     </key>
-      <key name="set-custom-panel-menu-width" type="i">
+    <key name="show-top-image" type="b">
+      <default>true</default>
+      <summary>Show Top image</summary>
+      <description>Show Top image</description>
+    </key>
+    <key name="set-custom-panel-menu-width" type="i">
       <default>0</default>
       <summary>Set Panel Menu width</summary>
     </key>
@@ -67,6 +72,31 @@
       <default>""</default>
       <summary>buttons-background</summary>
       <description>buttons-background</description>
+    </key>
+    <key name="order-avatar" type="i">
+      <default>0</default>
+      <summary>Set Order for Avatar</summary>
+    </key>
+    <key name="order-mpris" type="i">
+      <default>1</default>
+      <summary>Set Order for Media center</summary>
+    </key>
+    <key name="order-top-image" type="i">
+      <default>2</default>
+      <summary>Set Order for Top image</summary>
+    </key>
+    <key name="top-image" type="s">
+      <default>""</default>
+      <summary>Top image</summary>
+      <description>The texture used for the top image</description>
+    </key>
+    <key name="top-image-size-width" type="i">
+      <default>450</default>
+      <summary>Set Top image size width</summary>
+    </key>
+    <key name="top-image-size-height" type="i">
+      <default>70</default>
+      <summary>Set Top image size hight</summary>
     </key>
   </schema>
 </schemalist>

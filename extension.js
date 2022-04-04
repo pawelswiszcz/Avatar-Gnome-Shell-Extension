@@ -30,11 +30,14 @@ const _ = ExtensionUtils.gettext;
 const Me = ExtensionUtils.getCurrentExtension();
 
 const { UserWidget } = Me.imports.src.UserWidget;
+const { TopImage } = Me.imports.src.TopImage;
 
 //Creates temporary iconMenuItem variable
 let iconMenuItem = null;
 
 let mediaMenuItem = null;
+
+let topImageMenuItem = null;
 
 
 function resetAfterChange() {
@@ -51,6 +54,10 @@ function resetAfterChange() {
 
     if (mediaMenuItem) {
         mediaMenuItem.destroy();
+    }
+
+    if (topImageMenuItem) {
+        topImageMenuItem.destroy();
     }
 
 }
@@ -79,7 +86,14 @@ class Extension {
             'changed::show-media-center',
             'changed::set-custom-panel-menu-width',
             'changed::custom-buttons-background',
-            'changed::buttons-background'
+            'changed::buttons-background',
+            'changed::order-avatar',
+            'changed::order-mpris',
+            'changed::order-top-image',
+            'changed::show-top-image',
+            'changed::top-image',
+            'changed::top-image-size-width',
+            'changed::top-image-size-height'
         ];
 
         for (const i in changedElements) {
@@ -117,7 +131,7 @@ class Extension {
         iconMenuItem = this.iconMenuItem;
 
         //Adds item to menu
-        Main.panel.statusArea.aggregateMenu.menu.addMenuItem(this.iconMenuItem, 0);
+        Main.panel.statusArea.aggregateMenu.menu.addMenuItem(this.iconMenuItem, this.settings.get_int('order-avatar'));
         this.systemMenu = Main.panel.statusArea['aggregateMenu']._system;
 
         var userManager = AccountsService.UserManager.get_default();
@@ -141,7 +155,7 @@ class Extension {
 
         if (this.settings.get_boolean('show-media-center')) {
             this._mediaSectionMenuItem = new PopupMenu.PopupMenuItem('', { hover: false });
-            Main.panel.statusArea.aggregateMenu.menu.addMenuItem(this._mediaSectionMenuItem, 1);
+            Main.panel.statusArea.aggregateMenu.menu.addMenuItem(this._mediaSectionMenuItem, this.settings.get_int('order-mpris'));
 
             this._mediaSection = new Mpris.MediaSection();
 
@@ -158,6 +172,30 @@ class Extension {
         } else {
             calendarMpris._shouldShow = () => true;
             calendarMpris.show();
+        }
+
+        if (this.settings.get_boolean('show-top-image')) {
+            this._topImageSectionMenuItem = new PopupMenu.PopupMenuItem('', {
+                hover: false,
+                reactive: false,
+                can_focus: false,
+            });
+            Main.panel.statusArea.aggregateMenu.menu.addMenuItem(this._topImageSectionMenuItem, this.settings.get_int('order-top-image'));
+
+            this._topImageSection = new TopImage(this.settings.get_string('top-image'), 
+                {
+                    width: this.settings.get_int('top-image-size-width'),
+                    height: this.settings.get_int('top-image-size-height')
+                }
+            );
+
+            this._topImageSectionMenuItem.add_child(new St.BoxLayout({
+                x_expand: true, y_expand: true, vertical: true, style_class: "top-image-box",
+            }));
+
+            this._topImageSectionMenuItem.actor.get_last_child().add_child(this._topImageSection);
+
+            topImageMenuItem = this._topImageSectionMenuItem;
         }
     }
 

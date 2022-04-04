@@ -3,7 +3,7 @@ const PopupMenu = imports.ui.popupMenu;
 const { Avatar, UserWidgetLabel } = imports.ui.userWidget;
 const Util = imports.misc.util;
 
-const UserWidget = GObject.registerClass(class UserWidget extends St.BoxLayout {
+var UserWidget = GObject.registerClass(class UserWidget extends St.BoxLayout {
     _init(
         user,
         orientation = Clutter.Orientation.HORIZONTAL,
@@ -207,7 +207,7 @@ const UserWidget = GObject.registerClass(class UserWidget extends St.BoxLayout {
 });
 
 
-const DoNotDisturbSwitch = GObject.registerClass(class DoNotDisturbSwitch extends PopupMenu.Switch {
+var DoNotDisturbSwitch = GObject.registerClass(class DoNotDisturbSwitch extends PopupMenu.Switch {
     _init() {
         this._settings = new Gio.Settings({
             schema_id: 'org.gnome.desktop.notifications',
@@ -224,7 +224,7 @@ const DoNotDisturbSwitch = GObject.registerClass(class DoNotDisturbSwitch extend
     }
 });
 
-const NotificationBox = GObject.registerClass(
+var NotificationBox = GObject.registerClass(
     {
         Properties: {
             'active': GObject.ParamSpec.boolean('active', 'active', 'active',
@@ -287,7 +287,7 @@ const NotificationBox = GObject.registerClass(
 
     });
 
-const SystemButton = GObject.registerClass(
+var SystemButton = GObject.registerClass(
     {
         Properties: {
             'active': GObject.ParamSpec.boolean('active', 'active', 'active',

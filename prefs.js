@@ -33,16 +33,20 @@ const AvatarSettings = new GObject.Class({
         const avatarPage = this.getAvatarPage();
         const mprisPage = this.getMprisPage();
         const buttonsPage = this.getButtonsPage();
+        const topImagePage = this.getTopImagePage();
+
+
 
         stack.add_titled(generalPage, 'general', 'General Options');
         stack.add_titled(avatarPage, 'avatar', 'Avatar');
         stack.add_titled(mprisPage, 'mpris', 'Media center');
         stack.add_titled(buttonsPage, 'system-buttons', 'System buttons');
+        stack.add_titled(topImagePage, 'top-image', 'Top Image');
 
         this.append(new Gtk.StackSidebar({ stack: stack }));
         this.append(stack);
 
-        
+
         this.connect('realize', (widget) => {
             const window = this.isGTK4() ? widget.get_root() : widget.get_toplevel();
 
@@ -84,6 +88,18 @@ const AvatarSettings = new GObject.Class({
                 'set-custom-panel-menu-width', 'Set custom panel menu width:',
                 0, 2000, 'set to 0 to use Your default value, needs restart gnome shell ALT+F2 -> r'
             ),
+            this.getSpinButton(
+                'order-avatar', 'Set Order for Avatar:',
+                0, 100, 'default 0'
+            ),
+            this.getSpinButton(
+                'order-mpris', 'Set Order for Media center:',
+                0, 100, 'default 1'
+            ),
+            this.getSpinButton(
+                'order-top-image', 'Set Order for Top image:',
+                0, 100, 'default 2'
+            )
         ];
 
         let i = 1;
@@ -172,6 +188,29 @@ const AvatarSettings = new GObject.Class({
         return page;
     },
 
+    getTopImagePage: function () {
+        const page = this.createBox();
+        const grid = this.createGrid();
+
+        let prefsButtons = [
+            this.getSwitch('show-top-image', 'Add Top image:'),
+            this.getSpinButton('top-image-size-width', 'Top image width size:', 1, 1000),
+            this.getSpinButton('top-image-size-height', 'Top image height size:',1, 1000),
+            this.getFileChooserButton('top-image', 'Image:')
+        ];
+
+        let i = 1;
+
+        for (const prefsButtonsKey in prefsButtons) {
+            grid.attach(prefsButtons[prefsButtonsKey].gtkLabel, 0, i, 1, 1);
+            grid.attach(prefsButtons[prefsButtonsKey].toggle, 1, i, 1, 1);
+            i++;
+        }
+
+        page.append(grid);
+
+        return page;
+    },
 
     getSwitch: function ($key, $text, $description = null) {
         //Create temp vars
@@ -299,6 +338,87 @@ const AvatarSettings = new GObject.Class({
 
         return { toggle, gtkLabel };
     },
+
+    getFileChooserButton: function ($key, $text, $description = null) {
+        //Create temp vars
+        let gtkLabel = null;
+        let toggle = null;
+
+
+        //Create horizontal mode and default values toggleable switches
+        toggle = new Gtk.Button({ halign: Gtk.Align.END });
+        toggle.set_label("Browse");
+
+        gtkLabel = new Gtk.Box();
+        gtkLabel.margin_start = 20;
+        gtkLabel.margin_end = 20;
+
+        //Creates labels;
+        let gtkLabelTmp = new Gtk.Label({
+            label: $text,
+            hexpand: true,
+            halign: Gtk.Align.START
+        });
+
+        gtkLabel.append(gtkLabelTmp);
+
+        if ($description) {
+            //Creates labels;
+            let gtkLabel2 = new Gtk.Label({
+                hexpand: false,
+                xalign: 0,
+                halign: Gtk.Align.START,
+                valign: Gtk.Align.CENTER
+            });
+            gtkLabel2.set_markup('<span foreground="grey" size="x-small">' + $description + '</span>');
+
+            gtkLabel.append(gtkLabel2)
+        }
+
+        let settings = this.settings;
+
+        let fileEntry = new Gtk.Entry({ hexpand: true, margin_start: 20 });
+
+        fileEntry.set_text(settings.get_string($key));
+        fileEntry.connect('changed', (entry) => {
+            settings.set_string($key, entry.get_text());
+        });
+
+        gtkLabel.append(fileEntry)
+
+        let showFileChooserDialog = function () {
+
+            let fileChooser = new Gtk.FileChooserDialog({ title: $text });
+            fileChooser.set_default_response(1);
+
+            let filter = new Gtk.FileFilter();
+            filter.add_pixbuf_formats();
+            fileChooser.filter = filter;
+
+            fileChooser.add_button("Open", Gtk.ResponseType.ACCEPT);
+
+            fileChooser.connect("response", (dialog, response) => {
+
+                if (response == Gtk.ResponseType.ACCEPT) {
+
+                    let file = dialog.get_file().get_path();
+                    if (file.length > 0) {
+                        fileEntry.set_text(file);
+                    }
+
+                    fileChooser.destroy();
+                }
+            });
+
+            fileChooser.show();
+        };
+
+        toggle.connect('clicked', showFileChooserDialog.bind(this));
+
+        return { toggle, gtkLabel };
+    },
+
+
     isGTK4: function () {
         return Gtk.get_major_version() == 4;
     }
