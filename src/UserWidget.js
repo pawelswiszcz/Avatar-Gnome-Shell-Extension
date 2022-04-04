@@ -3,7 +3,7 @@ const PopupMenu = imports.ui.popupMenu;
 const { Avatar, UserWidgetLabel } = imports.ui.userWidget;
 const Util = imports.misc.util;
 
-const UserWidget = GObject.registerClass(class UserWidget extends St.BoxLayout {
+var UserWidget = GObject.registerClass(class UserWidget extends St.BoxLayout {
     _init(
         user,
         orientation = Clutter.Orientation.HORIZONTAL,
@@ -95,21 +95,8 @@ const UserWidget = GObject.registerClass(class UserWidget extends St.BoxLayout {
                 notificationBox.style = notificationBoxStyle;
 
                 let dndSwitch = new DoNotDisturbSwitch();
-                let dndButton = new St.Button({
-                    style_class: 'dnd-button',
-                    can_focus: true,
-                    toggle_mode: true,
-                    child: dndSwitch,
-                    x_align: Clutter.ActorAlign.CENTER,
-                    y_align: Clutter.ActorAlign.CENTER,
-                });
 
-                dndSwitch.bind_property('state', dndButton, 'checked',
-                    GObject.BindingFlags.BIDIRECTIONAL | GObject.BindingFlags.SYNC_CREATE
-                );
-
-
-                notificationBox.add_child(dndButton);
+                notificationBox.add_child(dndSwitch);
                 notificationBox.add_child(this.getSystemButton(systemButtonsIconSize));
                 notificationBox.add_child(this.getSuspendButton(systemButtonsIconSize));
                 notificationBox.add_child(this.getPowerButton(systemButtonsIconSize));
@@ -207,20 +194,50 @@ const UserWidget = GObject.registerClass(class UserWidget extends St.BoxLayout {
 });
 
 
-const DoNotDisturbSwitch = GObject.registerClass(class DoNotDisturbSwitch extends PopupMenu.Switch {
+const DoNotDisturbSwitch = GObject.registerClass({
+    Properties: {
+        'show-banners': GObject.ParamSpec.boolean(
+            'show-banners',
+            'Show Banners',
+            '',
+            GObject.ParamFlags.READWRITE,
+            true
+        ),
+    },
+},class DoNotDisturbSwitch extends PopupMenu.PopupImageMenuItem {
     _init() {
         this._settings = new Gio.Settings({
             schema_id: 'org.gnome.desktop.notifications',
         });
 
-        super._init(this._settings.get_boolean('show-banners'));
-
-        this._settings.bind('show-banners', this, 'state', Gio.SettingsBindFlags.BOOLEAN);
+        super._init ('','notifications-symbolic');
+        
+        this._show_banners = this._settings.get_boolean('show-banners');
 
         this.connect('destroy', () => {
             this._settings.run_dispose();
             this._settings = null;
         });
+        
+        this.connect('activate', () =>{
+            this._show_banners = !(this._show_banners);
+                    
+            if (this._show_banners === true)
+            {
+                this.setIcon ('notifications-symbolic');
+            } else {
+                this.setIcon ('notifications-disabled-symbolic');
+            }
+                this._settings.set_boolean('show-banners',this._show_banners);
+            });
+    }
+
+    get show_banners(){
+        return this._show_banners;
+    }
+    
+    set show_banners(value){
+        this._show_banners = value;
     }
 });
 
