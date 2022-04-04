@@ -37,12 +37,9 @@ let iconMenuItem = null;
 
 let mediaMenuItem = null;
 
-<<<<<<< HEAD
 let topImageMenuItem = null;
 
-=======
 let calendarMpris = Main.panel.statusArea.dateMenu._messageList._mediaSection;
->>>>>>> origin/master
 
 function resetAfterChange() {
     //Disconnects systemMenu
