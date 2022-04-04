@@ -11,6 +11,8 @@ v 13
 
 - Fix default mpris notifications not showing when extensions' mpris is enabled and extension is disabled
 
+- Simpler Notification Switch
+
 v 12
 
 - Refactor UserWidget
