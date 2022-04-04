@@ -1,11 +1,7 @@
 {
-  "uuid": "avatar@pawel.swiszcz.com",
+  "uuid": "avatar-dev@pawel.swiszcz.com",
   "name": "Avatar",
-<<<<<<< HEAD
   "description": "The Avatar Extension can add into the panel: \n * Avatar (horizontal/vertical, shades, visibility of username and hostname) \n * Primary buttons \n * MPRIS \n * Top image (can be Your own image from system) ",
-=======
-  "description": "Adds an avatar to the panel. Controllability: shades, buttons (turn notifications on/off, sleep, off), visibility of username and hostname",
->>>>>>> origin/master
   "version": 13,
   "shell-version": [
     "41",
