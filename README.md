@@ -9,8 +9,12 @@ Available on gnome EGO:
 # Changelog
 v 13
 
+<<<<<<< HEAD
 - Added new section Top image
 - Added the ability to reorder Avatar, Media center, Top image sections
+=======
+- Fix default mpris notifications not showing when extensions' mpris is enabled and extension is disabled
+>>>>>>> origin/master
 
 v 12
 

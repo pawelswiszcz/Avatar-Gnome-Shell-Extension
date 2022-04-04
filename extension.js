@@ -37,8 +37,12 @@ let iconMenuItem = null;
 
 let mediaMenuItem = null;
 
+<<<<<<< HEAD
 let topImageMenuItem = null;
 
+=======
+let calendarMpris = Main.panel.statusArea.dateMenu._messageList._mediaSection;
+>>>>>>> origin/master
 
 function resetAfterChange() {
     //Disconnects systemMenu
@@ -54,6 +58,8 @@ function resetAfterChange() {
 
     if (mediaMenuItem) {
         mediaMenuItem.destroy();
+        calendarMpris._shouldShow = () => true;
+        calendarMpris.show();
     }
 
     if (topImageMenuItem) {
@@ -150,8 +156,6 @@ class Extension {
             let avatar = this.setVerticalStyle(user);
             this.iconMenuItem.actor.get_last_child().add_child(avatar);
         }
-
-        let calendarMpris = Main.panel.statusArea.dateMenu._messageList._mediaSection;
 
         if (this.settings.get_boolean('show-media-center')) {
             this._mediaSectionMenuItem = new PopupMenu.PopupMenuItem('', { hover: false });
