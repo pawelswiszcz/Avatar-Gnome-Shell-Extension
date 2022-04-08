@@ -53,6 +53,9 @@ function resetAfterChange() {
         iconMenuItem.destroy();
     }
 
+    Main.panel.statusArea.dateMenu._messageList._dndButton.show();
+    Main.panel.statusArea.dateMenu._messageList._dndButton.label_actor.show();
+
     if (mediaMenuItem) {
         mediaMenuItem.destroy();
         calendarMpris._shouldShow = () => true;
