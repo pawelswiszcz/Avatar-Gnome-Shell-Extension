@@ -41,6 +41,11 @@
       <summary>Show system buttons</summary>
       <description>Show system buttons</description>
     </key>
+    <key name="dnd-use-icon" type="b">
+      <default>true</default>
+      <summary>Use icon for dnd switch</summary>
+      <description>Use icon for dnd switch</description>
+    </key>
     <key name="buttons-position" type="i">
       <default>0</default>
       <summary>Set Position</summary>

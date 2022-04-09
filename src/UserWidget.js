@@ -18,7 +18,8 @@ var UserWidget = GObject.registerClass(class UserWidget extends St.BoxLayout {
         systemButtonsPosition = 1,
         systemButtonsIconSize = 1,
         useSystemButtonsColor = false,
-        systemButtonsColor = false
+        systemButtonsColor = false,
+        dndUseIcon = true,
     ) {
         // If user is null, that implies a username-based login authorization.
         this._user = user;
@@ -95,7 +96,7 @@ var UserWidget = GObject.registerClass(class UserWidget extends St.BoxLayout {
 
                 notificationBox.style = notificationBoxStyle;
 
-                let dndSwitch = new DoNotDisturbSwitch(systemButtonsIconSize);
+                let dndSwitch = new DoNotDisturbSwitch(systemButtonsIconSize,dndUseIcon);
 
                 notificationBox.add_child(dndSwitch);
                 notificationBox.add_child(this.getSystemButton(systemButtonsIconSize));
@@ -318,47 +319,65 @@ var SystemButton = GObject.registerClass(
         }
     });
 
-var DoNotDisturbSwitch = GObject.registerClass(
-    class DoNotDisturbSwitch extends SystemButton {
-        _init(iconSize) {
-            super._init();
-
-            this._icon = new St.Icon({icon_name: 'notifications-symbolic',iconSize: iconSize,                                    });
-
-            this.set_child(this._icon);
+var DoNotDisturbSwitch = GObject.registerClass({
+    },
+    class DoNotDisturbSwitch extends St.Button {
+        _init(iconSize,useIcon) {
+            super._init({
+                style_class: 'bttn system-button dnd-button',
+                can_focus: true,
+                toggle_mode: true,
+                y_align: Clutter.ActorAlign.CENTER
+            });
 
             this._settings = new Gio.Settings({
                 schema_id: 'org.gnome.desktop.notifications',
             });
 
-            let show_banners = this._settings.get_boolean('show-banners');
-            this.setIcon(show_banners);
+            this._show_banners = this._settings.get_boolean('show-banners');
 
-            this.connect ('clicked', () => {
-                let show_banners = this._settings.get_boolean('show-banners');
+            if (useIcon){
+                this._icon = new St.Icon ({iconSize: iconSize});
+                this.setIcon(this._show_banners);
 
-                this._settings.set_boolean('show-banners',!(show_banners));
+                this._settings.bind('show-banners',
+                                    this, 'checked',
+                                    Gio.SettingsBindFlags.DEFAULT);
 
-                show_banners = this._settings.get_boolean('show-banners');
+                this.connect ('clicked', () => {
+                    this._settings.set_boolean('show-banners',!(this._show_banners));
 
-                this.setIcon(show_banners);
-            });
+                    this._show_banners = this._settings.get_boolean('show-banners');
+
+                    this.setIcon(this._show_banners);
+                });
+
+                this.set_child(this._icon);
+            } else {
+                this._switch = new PopupMenu.Switch(this._show_banners);
+
+                this._settings.bind('show-banners',
+                                    this._switch, 'state',
+                                    Gio.SettingsBindFlags.INVERT_BOOLEAN);
+
+                this._switch.bind_property('state',
+                                            this, 'checked',
+                                            GObject.BindingFlags.BIDIRECTIONAL | GObject.BindingFlags.SYNC_CREATE);
+
+                this.set_child(this._switch);
+            }
 
             this.connect('destroy', () => {
                 this._settings.run_dispose();
                 this._settings = null;
-                this._icon.run_dispose();
-                this._icon = null;
             });
-            }
+        }
 
-            setIcon (value) {
+        setIcon (value) {
                 if (value == true){
                     this._icon.set_icon_name('notifications-symbolic');
-                    log('true');
                 } else {
                     this._icon.set_icon_name('notifications-disabled-symbolic');
-                    log('false');
                 }
-            }
+        }
 });
