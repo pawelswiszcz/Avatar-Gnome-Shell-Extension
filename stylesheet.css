@@ -32,6 +32,10 @@
     margin: 0px;
 }
 
+.dnd-button:checked{
+    background: none;
+}
+
 .top-image {
     border-radius: 10px;
 }

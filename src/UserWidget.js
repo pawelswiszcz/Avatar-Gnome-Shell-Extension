@@ -19,7 +19,7 @@ var UserWidget = GObject.registerClass(class UserWidget extends St.BoxLayout {
         systemButtonsIconSize = 1,
         useSystemButtonsColor = false,
         systemButtonsColor = false,
-        dndUseIcon = true,
+        dndUseIcon = true
     ) {
         // If user is null, that implies a username-based login authorization.
         this._user = user;
@@ -321,14 +321,11 @@ var SystemButton = GObject.registerClass(
 
 var DoNotDisturbSwitch = GObject.registerClass({
     },
-    class DoNotDisturbSwitch extends St.Button {
+    class DoNotDisturbSwitch extends SystemButton {
         _init(iconSize,useIcon) {
-            super._init({
-                style_class: 'bttn system-button dnd-button',
-                can_focus: true,
-                toggle_mode: true,
-                y_align: Clutter.ActorAlign.CENTER
-            });
+            super._init();
+
+            this.add_style_class_name('dnd-button');
 
             this._settings = new Gio.Settings({
                 schema_id: 'org.gnome.desktop.notifications',
@@ -360,9 +357,12 @@ var DoNotDisturbSwitch = GObject.registerClass({
                                     this._switch, 'state',
                                     Gio.SettingsBindFlags.INVERT_BOOLEAN);
 
-                this._switch.bind_property('state',
-                                            this, 'checked',
-                                            GObject.BindingFlags.BIDIRECTIONAL | GObject.BindingFlags.SYNC_CREATE);
+                this.connect('clicked', () => {
+                    this._settings.set_boolean('show-banners',!(this._show_banners));
+
+                    this._show_banners = this._settings.get_boolean('show-banners');
+                    this._switch.set_state (this._show_banners);
+                });
 
                 this.set_child(this._switch);
             }
