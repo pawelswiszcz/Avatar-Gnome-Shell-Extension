@@ -96,7 +96,7 @@ var UserWidget = GObject.registerClass(class UserWidget extends St.BoxLayout {
 
                 notificationBox.style = notificationBoxStyle;
 
-                let dndSwitch = new DoNotDisturbSwitch(systemButtonsIconSize,dndUseIcon);
+                let dndSwitch = new DoNotDisturbSwitch(systemButtonsIconSize, dndUseIcon);
 
                 notificationBox.add_child(dndSwitch);
                 notificationBox.add_child(this.getSystemButton(systemButtonsIconSize));
@@ -320,9 +320,9 @@ var SystemButton = GObject.registerClass(
     });
 
 var DoNotDisturbSwitch = GObject.registerClass({
-    },
+},
     class DoNotDisturbSwitch extends SystemButton {
-        _init(iconSize,useIcon) {
+        _init(iconSize, useIcon) {
             super._init();
 
             this._toggle_mode = false;
@@ -336,13 +336,13 @@ var DoNotDisturbSwitch = GObject.registerClass({
 
             this._show_banners = this._settings.get_boolean('show-banners');
 
-            if (useIcon){
-                this._icon = new St.Icon ({iconSize: iconSize});
+            if (useIcon) {
+                this._icon = new St.Icon({ iconSize: iconSize });
 
                 this.setIcon(this._show_banners);
 
-                this.connect ('button-release-event', () => {
-                    this._settings.set_boolean('show-banners',!(this._show_banners));
+                this.connect('button-release-event', () => {
+                    this._settings.set_boolean('show-banners', !(this._show_banners));
 
                     this._show_banners = this._settings.get_boolean('show-banners');
 
@@ -354,8 +354,8 @@ var DoNotDisturbSwitch = GObject.registerClass({
                 this._switch = new PopupMenu.Switch(this._show_banners);
 
                 this._settings.bind('show-banners',
-                                    this._switch, 'state',
-                                    Gio.SettingsBindFlags.DEFAULT);
+                    this._switch, 'state',
+                    Gio.SettingsBindFlags.DEFAULT);
 
                 this.connect('button-release-event', () => {
                     this._show_banners = !(this._settings.get_boolean('show-banners'));
@@ -371,11 +371,11 @@ var DoNotDisturbSwitch = GObject.registerClass({
             });
         }
 
-        setIcon (value) {
-                if (value == true){
-                    this._icon.set_icon_name('notifications-symbolic');
-                } else {
-                    this._icon.set_icon_name('notifications-disabled-symbolic');
-                }
+        setIcon(value) {
+            if (value == true) {
+                this._icon.set_icon_name('notifications-symbolic');
+            } else {
+                this._icon.set_icon_name('notifications-disabled-symbolic');
+            }
         }
-});
+    });
