@@ -325,7 +325,10 @@ var DoNotDisturbSwitch = GObject.registerClass({
         _init(iconSize,useIcon) {
             super._init();
 
-            this.add_style_class_name('dnd-button');
+            this._toggle_mode = false;
+
+            this.add_style_class_name('notify-button');
+            this.remove_style_pseudo_class('toggled');
 
             this._settings = new Gio.Settings({
                 schema_id: 'org.gnome.desktop.notifications',
@@ -338,11 +341,7 @@ var DoNotDisturbSwitch = GObject.registerClass({
 
                 this.setIcon(this._show_banners);
 
-                this._settings.bind('show-banners',
-                                    this, 'checked',
-                                    Gio.SettingsBindFlags.DEFAULT);
-
-                this.connect ('clicked', () => {
+                this.connect ('button-release-event', () => {
                     this._settings.set_boolean('show-banners',!(this._show_banners));
 
                     this._show_banners = this._settings.get_boolean('show-banners');
@@ -358,11 +357,9 @@ var DoNotDisturbSwitch = GObject.registerClass({
                                     this._switch, 'state',
                                     Gio.SettingsBindFlags.DEFAULT);
 
-                this.connect('clicked', () => {
-                    this._settings.set_boolean('show-banners',!(this._show_banners));
-
-                    this._show_banners = this._settings.get_boolean('show-banners');
-                    this._switch.set_state (this._show_banners);
+                this.connect('button-release-event', () => {
+                    this._show_banners = !(this._settings.get_boolean('show-banners'));
+                    this._switch.state = this._show_banners;
                 });
 
                 this.set_child(this._switch);
