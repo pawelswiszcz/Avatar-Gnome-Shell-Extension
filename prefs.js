@@ -171,6 +171,7 @@ const AvatarSettings = new GObject.Class({
             this.getSwitch('show-buttons', 'Add system buttons:'),
             this.getSpinButton('buttons-position', 'Buttons position:'),
             this.getSpinButton('buttons-icon-size', 'Buttons icon size:'),
+            this.getSwitch('dnd-use-icon', 'DND button use icon:'),
             this.getSwitch('custom-buttons-background', 'Use custom buttons background color:'),
             this.getColorPicker('buttons-background', 'Buttons background color:'),
         ];

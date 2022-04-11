@@ -1,6 +1,7 @@
 const { AccountsService, GObject, St, Clutter, GLib, Gio, Atk } = imports.gi;
 const PopupMenu = imports.ui.popupMenu;
 const { Avatar, UserWidgetLabel } = imports.ui.userWidget;
+const Main = imports.ui.main;
 const Util = imports.misc.util;
 
 var UserWidget = GObject.registerClass(class UserWidget extends St.BoxLayout {
@@ -17,7 +18,8 @@ var UserWidget = GObject.registerClass(class UserWidget extends St.BoxLayout {
         systemButtonsPosition = 1,
         systemButtonsIconSize = 1,
         useSystemButtonsColor = false,
-        systemButtonsColor = false
+        systemButtonsColor = false,
+        dndUseIcon = true
     ) {
         // If user is null, that implies a username-based login authorization.
         this._user = user;
@@ -94,27 +96,20 @@ var UserWidget = GObject.registerClass(class UserWidget extends St.BoxLayout {
 
                 notificationBox.style = notificationBoxStyle;
 
-                let dndSwitch = new DoNotDisturbSwitch();
-                let dndButton = new St.Button({
-                    style_class: 'dnd-button',
-                    can_focus: true,
-                    toggle_mode: true,
-                    child: dndSwitch,
-                    x_align: Clutter.ActorAlign.CENTER,
-                    y_align: Clutter.ActorAlign.CENTER,
-                });
+                let dndSwitch = new DoNotDisturbSwitch(systemButtonsIconSize,dndUseIcon);
 
-                dndSwitch.bind_property('state', dndButton, 'checked',
-                    GObject.BindingFlags.BIDIRECTIONAL | GObject.BindingFlags.SYNC_CREATE
-                );
-
-
-                notificationBox.add_child(dndButton);
+                notificationBox.add_child(dndSwitch);
                 notificationBox.add_child(this.getSystemButton(systemButtonsIconSize));
                 notificationBox.add_child(this.getSuspendButton(systemButtonsIconSize));
                 notificationBox.add_child(this.getPowerButton(systemButtonsIconSize));
 
                 this.add_child(notificationBox);
+
+                Main.panel.statusArea.dateMenu._messageList._dndButton.hide();
+                Main.panel.statusArea.dateMenu._messageList._dndButton.label_actor.hide();
+            } else {
+                Main.panel.statusArea.dateMenu._messageList._dndButton.show();
+                Main.panel.statusArea.dateMenu._messageList._dndButton.label_actor.show();
             }
 
             this._userLoadedId = this._user.connect('notify::is-loaded', this._updateUser.bind(this));
@@ -165,12 +160,6 @@ var UserWidget = GObject.registerClass(class UserWidget extends St.BoxLayout {
         Util.spawn(['systemctl', 'suspend']);
     }
 
-    getNotificationIcon(systemButtonsIconSize) {
-        return new St.Icon({
-            icon_name: 'preferences-system-notifications-symbolic', iconSize: systemButtonsIconSize,
-        });
-    }
-
     getPowerOffIcon(systemButtonsIconSize) {
         return new St.Icon({
             icon_name: 'system-shutdown-symbolic', iconSize: systemButtonsIconSize,
@@ -203,24 +192,6 @@ var UserWidget = GObject.registerClass(class UserWidget extends St.BoxLayout {
 
     _updateUser() {
         this._avatar.update();
-    }
-});
-
-
-var DoNotDisturbSwitch = GObject.registerClass(class DoNotDisturbSwitch extends PopupMenu.Switch {
-    _init() {
-        this._settings = new Gio.Settings({
-            schema_id: 'org.gnome.desktop.notifications',
-        });
-
-        super._init(this._settings.get_boolean('show-banners'));
-
-        this._settings.bind('show-banners', this, 'state', Gio.SettingsBindFlags.BOOLEAN);
-
-        this.connect('destroy', () => {
-            this._settings.run_dispose();
-            this._settings = null;
-        });
     }
 });
 
@@ -346,5 +317,65 @@ var SystemButton = GObject.registerClass(
                 this.notify('active');
             }
         }
-
     });
+
+var DoNotDisturbSwitch = GObject.registerClass({
+    },
+    class DoNotDisturbSwitch extends SystemButton {
+        _init(iconSize,useIcon) {
+            super._init();
+
+            this._toggle_mode = false;
+
+            this.add_style_class_name('notify-button');
+            this.remove_style_pseudo_class('toggled');
+
+            this._settings = new Gio.Settings({
+                schema_id: 'org.gnome.desktop.notifications',
+            });
+
+            this._show_banners = this._settings.get_boolean('show-banners');
+
+            if (useIcon){
+                this._icon = new St.Icon ({iconSize: iconSize});
+
+                this.setIcon(this._show_banners);
+
+                this.connect ('button-release-event', () => {
+                    this._settings.set_boolean('show-banners',!(this._show_banners));
+
+                    this._show_banners = this._settings.get_boolean('show-banners');
+
+                    this.setIcon(this._show_banners);
+                });
+
+                this.set_child(this._icon);
+            } else {
+                this._switch = new PopupMenu.Switch(this._show_banners);
+
+                this._settings.bind('show-banners',
+                                    this._switch, 'state',
+                                    Gio.SettingsBindFlags.DEFAULT);
+
+                this.connect('button-release-event', () => {
+                    this._show_banners = !(this._settings.get_boolean('show-banners'));
+                    this._switch.state = this._show_banners;
+                });
+
+                this.set_child(this._switch);
+            }
+
+            this.connect('destroy', () => {
+                this._settings.run_dispose();
+                this._settings = null;
+            });
+        }
+
+        setIcon (value) {
+                if (value == true){
+                    this._icon.set_icon_name('notifications-symbolic');
+                } else {
+                    this._icon.set_icon_name('notifications-disabled-symbolic');
+                }
+        }
+});

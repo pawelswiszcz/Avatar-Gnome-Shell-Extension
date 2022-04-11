@@ -53,6 +53,9 @@ function resetAfterChange() {
         iconMenuItem.destroy();
     }
 
+    Main.panel.statusArea.dateMenu._messageList._dndButton.show();
+    Main.panel.statusArea.dateMenu._messageList._dndButton.label_actor.show();
+
     if (mediaMenuItem) {
         mediaMenuItem.destroy();
         calendarMpris._shouldShow = () => true;
@@ -83,6 +86,7 @@ class Extension {
             'changed::avatar-shadow-user-name',
             'changed::show-system-name',
             'changed::show-buttons',
+            'changed::dnd-use-icon',
             'changed::system-name-position',
             'changed::buttons-position',
             'changed::buttons-icon-size',
@@ -216,7 +220,8 @@ class Extension {
             this.settings.get_int('buttons-position'),
             this.settings.get_int('buttons-icon-size'),
             this.settings.get_boolean('custom-buttons-background'),
-            this.settings.get_string('buttons-background')
+            this.settings.get_string('buttons-background'),
+            this.settings.get_boolean('dnd-use-icon')
         );
 
         avatar._updateUser();
@@ -240,7 +245,8 @@ class Extension {
             this.settings.get_int('buttons-position'),
             this.settings.get_int('buttons-icon-size'),
             this.settings.get_boolean('custom-buttons-background'),
-            this.settings.get_string('buttons-background')
+            this.settings.get_string('buttons-background'),
+            this.settings.get_boolean('dnd-use-icon')
         );
 
         avatar._updateUser();
