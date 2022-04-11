@@ -335,6 +335,7 @@ var DoNotDisturbSwitch = GObject.registerClass({
 
             if (useIcon){
                 this._icon = new St.Icon ({iconSize: iconSize});
+
                 this.setIcon(this._show_banners);
 
                 this._settings.bind('show-banners',
@@ -355,7 +356,7 @@ var DoNotDisturbSwitch = GObject.registerClass({
 
                 this._settings.bind('show-banners',
                                     this._switch, 'state',
-                                    Gio.SettingsBindFlags.INVERT_BOOLEAN);
+                                    Gio.SettingsBindFlags.DEFAULT);
 
                 this.connect('clicked', () => {
                     this._settings.set_boolean('show-banners',!(this._show_banners));
