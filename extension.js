@@ -35,6 +35,7 @@ const { TopImage } = Me.imports.src.TopImage;
 //Creates temporary iconMenuItem variable
 let iconMenuItem = null;
 
+let mediaSectionMenuItem = null;
 let mediaMenuItem = null;
 
 let topImageMenuItem = null;
@@ -170,7 +171,10 @@ class Extension {
 
             this._mediaSectionMenuItem.actor.get_last_child().add_child(this._mediaSection);
 
-            mediaMenuItem = this._mediaSectionMenuItem;
+            mediaSectionMenuItem = this._mediaSectionMenuItem;
+            mediaMenuItem = this._mediaSection;
+
+            Main.panel.statusArea['aggregateMenu'].menu.connect('open-state-changed',this._mprisHideOnEmpty);
 
             calendarMpris._shouldShow = () => false;
             calendarMpris.hide();
@@ -253,9 +257,18 @@ class Extension {
 
         return avatar;
     }
-}
 
+    _mprisHideOnEmpty (){
+        let isEmpty = mediaMenuItem._players.size;
+
+        if (isEmpty === 0)
+            mediaSectionMenuItem.hide();
+        else
+            mediaSectionMenuItem.show();
+    };
+}
 
 function init(meta) {
     return new Extension(meta.uuid);
 }
+
