@@ -26,10 +26,6 @@ const Util = imports.misc.util;
 const PopupMenu = imports.ui.popupMenu;
 const Mpris = imports.ui.mpris;
 
-const { loadInterfaceXML } = imports.misc.fileUtils;
-const DBusIface = loadInterfaceXML('org.freedesktop.DBus');
-const DBusProxy = Gio.DBusProxy.makeProxyWrapper(DBusIface);
-
 const _ = ExtensionUtils.gettext;
 const Me = ExtensionUtils.getCurrentExtension();
 
@@ -42,6 +38,8 @@ let iconMenuItem = null;
 let mediaMenuItem = null;
 
 let topImageMenuItem = null;
+
+let calendarMpris = Main.panel.statusArea.dateMenu._messageList._mediaSection;
 
 function resetAfterChange() {
     //Disconnects systemMenu
@@ -77,12 +75,7 @@ class Extension {
 
     enable() {
         this.settings = ExtensionUtils.getSettings('org.gnome.shell.extensions.avatar');
-        this._calendarMpris = Main.panel.statusArea.dateMenu._messageList._mediaSection;
 
-        this._mprisProxy = new DBusProxy(Gio.DBus.session,
-                                        'org.freedesktop.DBus',
-                                        '/org/freedesktop/DBus',
-                                        this._onProxyReady.bind(this));
         let _that = this;
 
         let changedElements = [
@@ -176,15 +169,14 @@ class Extension {
             }));
 
             this._mediaSectionMenuItem.actor.get_last_child().add_child(this._mediaSection);
-            this._mediaSectionMenuItem.hide();
-            
+
             mediaMenuItem = this._mediaSectionMenuItem;
 
-            this._calendarMpris._shouldShow = () => false;
-            this._calendarMpris.hide();
+            calendarMpris._shouldShow = () => false;
+            calendarMpris.hide();
         } else {
-            this._calendarMpris._shouldShow = () => true;
-            this._calendarMpris.show();
+            calendarMpris._shouldShow = () => true;
+            calendarMpris.show();
         }
 
         if (this.settings.get_boolean('show-top-image')) {
@@ -261,23 +253,8 @@ class Extension {
 
         return avatar;
     }
-    
-    _onProxyReady() {
-        log('mpris baby');
-        this._mprisProxy.ListNamesRemote(([names]) => {
-            this._mprisProxy.connectSignal('NameOwnerChanged',
-                                            this._onNameOwnerChanged.bind(this._mprisProxy));
-        });
-    }
-
-    _onNameOwnerChanged(proxy, sender, [name, oldOwner, newOwner]) {
-        if (!name.startsWith('org.mpris.MediaPlayer2.'))
-            mediaMenuItem.hide();
-        
-        if (newOwner && !oldOwner)
-            mediaMenuItem.show();
-    }
 }
+
 
 function init(meta) {
     return new Extension(meta.uuid);
