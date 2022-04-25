@@ -1,32 +1,33 @@
 /* Add your custom extension styling here */
-.dark .user-widget-label{
+.dark .user-widget-label {
     color: #222222;
 }
 
-.user-widget.shadow .user-icon{
+.user-widget.shadow .user-icon {
     box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.5), 0 6px 20px 0 rgba(0, 0, 0, 0.5);
 }
 
-.user-widget-system-label.vertical{
+.user-widget-system-label.vertical {
     text-align: center;
     font-weight: normal;
     padding-top: 5px;
 }
-.user-widget-system-label.horizontal{
+
+.user-widget-system-label.horizontal {
     text-align: center;
 }
 
-.user-widget-system-label.shadow{
-    text-shadow: 2px 2px 3px rgba(0,0,0,0.3);
+.user-widget-system-label.shadow {
+    text-shadow: 2px 2px 3px rgba(0, 0, 0, 0.2);
 }
 
-.user-box-notification.horizontal{
+.user-box-notification.horizontal {
     padding: 10px;
     border-radius: 10px;
     /*box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.2), 0 3px 10px 0 rgba(0, 0, 0, 0.2);*/
 }
 
-.user-box-notification .bttn{
+.user-box-notification .bttn {
     text-align: center;
     padding: 10px;
     margin: 0px;

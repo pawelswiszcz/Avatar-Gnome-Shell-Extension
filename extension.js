@@ -18,7 +18,7 @@
 
 /* exported init */
 
-const { AccountsService, GObject, St, Clutter, GLib, Gio, Atk } = imports.gi;
+const {AccountsService, GObject, St, Clutter, GLib, Gio, Atk} = imports.gi;
 
 const ExtensionUtils = imports.misc.extensionUtils;
 const Main = imports.ui.main;
@@ -29,8 +29,8 @@ const Mpris = imports.ui.mpris;
 const _ = ExtensionUtils.gettext;
 const Me = ExtensionUtils.getCurrentExtension();
 
-const { UserWidget } = Me.imports.src.UserWidget;
-const { TopImage } = Me.imports.src.TopImage;
+const {UserWidget} = Me.imports.src.UserWidget;
+const {TopImage} = Me.imports.src.TopImage;
 
 //Creates temporary iconMenuItem variable
 let iconMenuItem = null;
@@ -159,7 +159,7 @@ class Extension {
         }
 
         if (this.settings.get_boolean('show-media-center')) {
-            this._mediaSectionMenuItem = new PopupMenu.PopupMenuItem('', { hover: false });
+            this._mediaSectionMenuItem = new PopupMenu.PopupMenuItem('', {hover: false});
             Main.panel.statusArea.aggregateMenu.menu.addMenuItem(this._mediaSectionMenuItem, this.settings.get_int('order-mpris'));
 
             this._mediaSection = new Mpris.MediaSection();
@@ -187,7 +187,7 @@ class Extension {
             });
             Main.panel.statusArea.aggregateMenu.menu.addMenuItem(this._topImageSectionMenuItem, this.settings.get_int('order-top-image'));
 
-            this._topImageSection = new TopImage(this.settings.get_string('top-image'), 
+            this._topImageSection = new TopImage(this.settings.get_string('top-image'),
                 {
                     width: this.settings.get_int('top-image-size-width'),
                     height: this.settings.get_int('top-image-size-height')

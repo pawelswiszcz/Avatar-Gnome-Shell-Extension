@@ -1,6 +1,6 @@
-const { AccountsService, GObject, St, Clutter, GLib, Gio, Atk } = imports.gi;
+const {GObject, St, Clutter, GLib, Gio} = imports.gi;
 const PopupMenu = imports.ui.popupMenu;
-const { Avatar, UserWidgetLabel } = imports.ui.userWidget;
+const {Avatar, UserWidgetLabel} = imports.ui.userWidget;
 const Main = imports.ui.main;
 const Util = imports.misc.util;
 
@@ -319,8 +319,7 @@ var SystemButton = GObject.registerClass(
         }
     });
 
-var DoNotDisturbSwitch = GObject.registerClass({
-},
+var DoNotDisturbSwitch = GObject.registerClass({},
     class DoNotDisturbSwitch extends SystemButton {
         _init(iconSize, useIcon) {
             super._init();
@@ -337,7 +336,7 @@ var DoNotDisturbSwitch = GObject.registerClass({
             this._show_banners = this._settings.get_boolean('show-banners');
 
             if (useIcon) {
-                this._icon = new St.Icon({ iconSize: iconSize });
+                this._icon = new St.Icon({iconSize: iconSize});
 
                 this.setIcon(this._show_banners);
 
