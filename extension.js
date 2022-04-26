@@ -42,6 +42,8 @@ let topImageMenuItem = null;
 
 let calendarMpris = Main.panel.statusArea.dateMenu._messageList._mediaSection;
 
+let menuOpenHandlerId = null;
+
 function resetAfterChange() {
     //Disconnects systemMenu
     this.systemMenu = Main.panel.statusArea['aggregateMenu']._system;
@@ -66,6 +68,16 @@ function resetAfterChange() {
     if (topImageMenuItem) {
         topImageMenuItem.destroy();
     }
+
+    if (menuOpenHandlerId) {
+        Main.panel.statusArea['aggregateMenu'].menu.disconnect(menuOpenHandlerId);
+        menuOpenHandlerId = null;
+    }
+
+    iconMenuItem = null
+    mediaSectionMenuItem = null;
+    topImageMenuItem = null;
+    mediaMenuItem = null;
 
 }
 
@@ -174,7 +186,7 @@ class Extension {
             mediaSectionMenuItem = this._mediaSectionMenuItem;
             mediaMenuItem = this._mediaSection;
 
-            Main.panel.statusArea['aggregateMenu'].menu.connect('open-state-changed',this._mprisHideOnEmpty);
+            menuOpenHandlerId = Main.panel.statusArea['aggregateMenu'].menu.connect('open-state-changed', this._mprisHideOnEmpty);
 
             calendarMpris._shouldShow = () => false;
             calendarMpris.hide();
@@ -258,7 +270,7 @@ class Extension {
         return avatar;
     }
 
-    _mprisHideOnEmpty (){
+    _mprisHideOnEmpty() {
         let isEmpty = mediaMenuItem._players.size;
 
         if (isEmpty === 0)
