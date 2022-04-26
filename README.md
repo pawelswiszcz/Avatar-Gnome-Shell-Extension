@@ -8,6 +8,10 @@ Available on gnome EGO:
 
 # Changelog
 
+### v 15
+
+- Fix for Mpris section container is visible even if no Media is playing. [@Zetta1Reid0](https://github.com/Zetta1Reid0 '@Zetta1Reid0')
+
 ### v 14
 
 - Adding a notification icon instead of a Switch in primary buttons [@Zetta1Reid0](https://github.com/Zetta1Reid0 '@Zetta1Reid0') 
