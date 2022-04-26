@@ -8,6 +8,10 @@ Available on gnome EGO:
 
 # Changelog
 
+### v 16
+
+- Fix signal menuOpenHandlerId disconnect from menu.
+
 ### v 15
 
 - Fix for Mpris section container is visible even if no Media is playing. [@Zetta1Reid0](https://github.com/Zetta1Reid0 '@Zetta1Reid0')
