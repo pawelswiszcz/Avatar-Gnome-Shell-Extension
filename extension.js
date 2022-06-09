@@ -18,7 +18,7 @@
 
 /* exported init */
 
-const {AccountsService, GObject, St, Clutter, GLib, Gio, Atk} = imports.gi;
+const {AccountsService, GObject, St, Clutter, GLib, Gio, Atk, Shell} = imports.gi;
 
 const ExtensionUtils = imports.misc.extensionUtils;
 const Main = imports.ui.main;
@@ -97,6 +97,7 @@ class Extension {
             'changed::name-style-dark',
             'changed::avatar-shadow',
             'changed::avatar-shadow-user-name',
+            'changed::avatar-icon-size',
             'changed::show-system-name',
             'changed::show-buttons',
             'changed::dnd-use-icon',
@@ -119,8 +120,8 @@ class Extension {
         for (const i in changedElements) {
             this.settings.connect(changedElements[i], function () {
                 resetAfterChange();
-                Main.panel.statusArea.aggregateMenu.menu.open();
                 _that.updateExtensionAppearance();
+                Main.panel.statusArea.aggregateMenu.menu.open();
             });
         }
 
@@ -237,7 +238,8 @@ class Extension {
             this.settings.get_int('buttons-icon-size'),
             this.settings.get_boolean('custom-buttons-background'),
             this.settings.get_string('buttons-background'),
-            this.settings.get_boolean('dnd-use-icon')
+            this.settings.get_boolean('dnd-use-icon'),
+            this.settings.get_int('avatar-icon-size')
         );
 
         avatar._updateUser();
@@ -262,7 +264,8 @@ class Extension {
             this.settings.get_int('buttons-icon-size'),
             this.settings.get_boolean('custom-buttons-background'),
             this.settings.get_string('buttons-background'),
-            this.settings.get_boolean('dnd-use-icon')
+            this.settings.get_boolean('dnd-use-icon'),
+            this.settings.get_int('avatar-icon-size')
         );
 
         avatar._updateUser();

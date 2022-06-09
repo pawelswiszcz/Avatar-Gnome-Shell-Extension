@@ -58,22 +58,13 @@ const AvatarSettings = new GObject.Class({
 
     createBox: function () {
         const box = new Gtk.Box();
-        box.margin_start = 60;
-        box.margin_end = 60;
-
         return box;
     },
 
     createGrid: function () {
         const grid = new Gtk.Grid();
         //Give grid's characteristics
-        grid.set_row_spacing(8);
-        grid.margin_start = 72;
-        grid.margin_end = 72;
-        grid.margin = 72;
-        grid.margin_top = 32;
-        grid.margin_bottom = 32;
-
+        grid.set_row_spacing(10);
         return grid;
     },
 
@@ -126,6 +117,7 @@ const AvatarSettings = new GObject.Class({
             this.getSwitch('name-style-dark', 'User name dark style:'),
             this.getSwitch('avatar-shadow', 'Add shadow to avatar:'),
             this.getSwitch('avatar-shadow-user-name', 'Add shadow to user name:'),
+            this.getSpinButton('avatar-icon-size', 'Avatar size:', 0, 400, 'default 0'),
         ];
 
         let i = 1;

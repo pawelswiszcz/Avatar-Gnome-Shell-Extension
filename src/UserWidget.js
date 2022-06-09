@@ -1,8 +1,11 @@
 const {GObject, St, Clutter, GLib, Gio} = imports.gi;
 const PopupMenu = imports.ui.popupMenu;
-const {Avatar, UserWidgetLabel} = imports.ui.userWidget;
+const {Avatar: AvatarUserWidget, UserWidgetLabel} = imports.ui.userWidget;
 const Main = imports.ui.main;
 const Util = imports.misc.util;
+const ExtensionUtils = imports.misc.extensionUtils;
+const Me = ExtensionUtils.getCurrentExtension();
+const {Avatar} = Me.imports.src.Avatar;
 
 var UserWidget = GObject.registerClass(class UserWidget extends St.BoxLayout {
     _init(
@@ -19,7 +22,8 @@ var UserWidget = GObject.registerClass(class UserWidget extends St.BoxLayout {
         systemButtonsIconSize = 1,
         useSystemButtonsColor = false,
         systemButtonsColor = false,
-        dndUseIcon = true
+        dndUseIcon = true,
+        avatarIconSize = 0
     ) {
         // If user is null, that implies a username-based login authorization.
         this._user = user;
@@ -42,7 +46,12 @@ var UserWidget = GObject.registerClass(class UserWidget extends St.BoxLayout {
 
         this.connect('destroy', this._onDestroy.bind(this));
 
-        this._avatar = new Avatar(user);
+        if (0 == avatarIconSize) {
+            this._avatar = new AvatarUserWidget(user);
+        } else {
+            this._avatar = new Avatar(user, { 'iconSize': avatarIconSize });
+        }
+
         this._avatar.x_align = Clutter.ActorAlign.CENTER;
 
 

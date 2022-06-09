@@ -36,6 +36,10 @@
       <summary>Add shadow to user name</summary>
       <description>Add shadow to user name</description>
     </key>
+    <key name="avatar-icon-size" type="i">
+      <default>0</default>
+      <summary>Set Avatar icon size</summary>
+    </key>
     <key name="show-buttons" type="b">
       <default>true</default>
       <summary>Show system buttons</summary>

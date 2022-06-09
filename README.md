@@ -8,6 +8,11 @@ Available on gnome EGO:
 
 # Changelog
 
+### v 17
+
+- Added ability to change the Avatar icon size
+- Preferences window more compact
+
 ### v 16
 
 - Fix signal menuOpenHandlerId disconnect from menu.

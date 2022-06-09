@@ -2,7 +2,7 @@
   "uuid": "avatar@pawel.swiszcz.com",
   "name": "Avatar",
   "description": "The Avatar Extension can add into the panel: \n * Avatar (horizontal/vertical, shades, visibility of username and hostname) \n * Primary buttons \n * MPRIS \n * Top image (can be Your own image from system) ",
-  "version": 16,
+  "version": 17,
   "shell-version": [
     "41",
     "42"
