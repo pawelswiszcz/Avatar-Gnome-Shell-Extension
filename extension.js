@@ -24,13 +24,14 @@ const ExtensionUtils = imports.misc.extensionUtils;
 const Main = imports.ui.main;
 const Util = imports.misc.util;
 const PopupMenu = imports.ui.popupMenu;
-const Mpris = imports.ui.mpris;
+
 
 const _ = ExtensionUtils.gettext;
 const Me = ExtensionUtils.getCurrentExtension();
 
 const {UserWidget} = Me.imports.src.UserWidget;
 const {TopImage} = Me.imports.src.TopImage;
+const Mpris = Me.imports.src.MediaSection;
 
 //Creates temporary iconMenuItem variable
 let iconMenuItem = null;
@@ -114,14 +115,17 @@ class Extension {
             'changed::show-top-image',
             'changed::top-image',
             'changed::top-image-size-width',
-            'changed::top-image-size-height'
+            'changed::top-image-size-height',
+            'changed::dnd-icon-name',
+            'changed::dnd-icon-name-disabled',
         ];
 
         for (const i in changedElements) {
             this.settings.connect(changedElements[i], function () {
                 resetAfterChange();
                 _that.updateExtensionAppearance();
-                Main.panel.statusArea.aggregateMenu.menu.open();
+                /*in open menu is little buggy with preferences G43*/
+                /* Main.panel.statusArea.aggregateMenu.menu.open();*/
             });
         }
 

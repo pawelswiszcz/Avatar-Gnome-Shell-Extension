@@ -2,8 +2,6 @@
 
 const GObject = imports.gi.GObject;
 const Gtk = imports.gi.Gtk;
-const Lang = imports.lang;
-const Gio = imports.gi.Gio;
 const Gdk = imports.gi.Gdk;
 
 const ExtensionUtils = imports.misc.extensionUtils;
@@ -28,14 +26,11 @@ const AvatarSettings = new GObject.Class({
             transition_type: Gtk.StackTransitionType.SLIDE_UP_DOWN,
         });
 
-
         const generalPage = this.getGeneralPage();
         const avatarPage = this.getAvatarPage();
         const mprisPage = this.getMprisPage();
         const buttonsPage = this.getButtonsPage();
         const topImagePage = this.getTopImagePage();
-
-
 
         stack.add_titled(generalPage, 'general', 'General Options');
         stack.add_titled(avatarPage, 'avatar', 'Avatar');
@@ -43,7 +38,7 @@ const AvatarSettings = new GObject.Class({
         stack.add_titled(buttonsPage, 'system-buttons', 'System buttons');
         stack.add_titled(topImagePage, 'top-image', 'Top Image');
 
-        this.append(new Gtk.StackSidebar({ stack: stack }));
+        this.append(new Gtk.StackSidebar({stack: stack}));
         this.append(stack);
 
 
@@ -164,6 +159,8 @@ const AvatarSettings = new GObject.Class({
             this.getSpinButton('buttons-position', 'Buttons position:'),
             this.getSpinButton('buttons-icon-size', 'Buttons icon size:'),
             this.getSwitch('dnd-use-icon', 'DND button use icon:'),
+            this.getEntry('dnd-icon-name', 'DND icon name:', 'Default: notifications-symbolic'),
+            this.getEntry('dnd-icon-name-disabled', 'DND disabled icon name:', 'Default: notifications-disabled-symbolic'),
             this.getSwitch('custom-buttons-background', 'Use custom buttons background color:'),
             this.getColorPicker('buttons-background', 'Buttons background color:'),
         ];
@@ -188,7 +185,7 @@ const AvatarSettings = new GObject.Class({
         let prefsButtons = [
             this.getSwitch('show-top-image', 'Add Top image:'),
             this.getSpinButton('top-image-size-width', 'Top image width size:', 1, 1000),
-            this.getSpinButton('top-image-size-height', 'Top image height size:',1, 1000),
+            this.getSpinButton('top-image-size-height', 'Top image height size:', 1, 1000),
             this.getFileChooserButton('top-image', 'Image:')
         ];
 
@@ -214,7 +211,7 @@ const AvatarSettings = new GObject.Class({
         let value = this.settings.get_boolean($key);
 
         //Create horizontal mode and default values toggleable switches
-        toggle = new Gtk.Switch({ halign: Gtk.Align.END });
+        toggle = new Gtk.Switch({halign: Gtk.Align.END});
 
         //Set it's state to gschemas' default
         toggle.set_state(value);
@@ -252,10 +249,10 @@ const AvatarSettings = new GObject.Class({
 
         toggle.connect('state-set', func.bind(this));
 
-        return { toggle, gtkLabel };
+        return {toggle, gtkLabel};
     },
     getSpinButton: function ($key, $text, $rangeFrom = 1, $rangeTo = 400, $description = null) {
-        let toggle = new Gtk.SpinButton({ halign: Gtk.Align.END });
+        let toggle = new Gtk.SpinButton({halign: Gtk.Align.END});
         toggle.set_sensitive(true);
         toggle.set_range($rangeFrom, $rangeTo);
         toggle.set_value(this.settings.get_int($key));
@@ -294,7 +291,7 @@ const AvatarSettings = new GObject.Class({
             gtkLabel.append(gtkLabel2)
         }
 
-        return { toggle, gtkLabel };
+        return {toggle, gtkLabel};
     },
     getColorPicker: function ($key, $text) {
         let toggle = new Gtk.ColorButton();
@@ -329,7 +326,7 @@ const AvatarSettings = new GObject.Class({
         gtkLabel.margin_end = 20;
         gtkLabel.append(gtkLabelTmp);
 
-        return { toggle, gtkLabel };
+        return {toggle, gtkLabel};
     },
 
     getFileChooserButton: function ($key, $text, $description = null) {
@@ -339,7 +336,7 @@ const AvatarSettings = new GObject.Class({
 
 
         //Create horizontal mode and default values toggleable switches
-        toggle = new Gtk.Button({ halign: Gtk.Align.END });
+        toggle = new Gtk.Button({halign: Gtk.Align.END});
         toggle.set_label("Browse");
 
         gtkLabel = new Gtk.Box();
@@ -370,7 +367,7 @@ const AvatarSettings = new GObject.Class({
 
         let settings = this.settings;
 
-        let fileEntry = new Gtk.Entry({ hexpand: true, margin_start: 20 });
+        let fileEntry = new Gtk.Entry({hexpand: true, margin_start: 20});
 
         fileEntry.set_text(settings.get_string($key));
         fileEntry.connect('changed', (entry) => {
@@ -381,7 +378,7 @@ const AvatarSettings = new GObject.Class({
 
         let showFileChooserDialog = function () {
 
-            let fileChooser = new Gtk.FileChooserDialog({ title: $text });
+            let fileChooser = new Gtk.FileChooserDialog({title: $text});
             fileChooser.set_default_response(1);
 
             let filter = new Gtk.FileFilter();
@@ -408,7 +405,49 @@ const AvatarSettings = new GObject.Class({
 
         toggle.connect('clicked', showFileChooserDialog.bind(this));
 
-        return { toggle, gtkLabel };
+        return {toggle, gtkLabel};
+    },
+    getEntry: function ($key, $text, $description = null) {
+        //Create temp vars
+        let gtkLabel = null;
+
+        gtkLabel = new Gtk.Box();
+        gtkLabel.margin_start = 20;
+        gtkLabel.margin_end = 20;
+
+        //Creates labels;
+        let gtkLabelTmp = new Gtk.Label({
+            label: $text,
+            hexpand: true,
+            halign: Gtk.Align.START
+        });
+
+        gtkLabel.append(gtkLabelTmp);
+
+        if ($description) {
+            //Creates labels;
+            let gtkLabel2 = new Gtk.Label({
+                hexpand: false,
+                xalign: 0,
+                halign: Gtk.Align.START,
+                valign: Gtk.Align.CENTER
+            });
+            gtkLabel2.set_markup('<span foreground="grey" size="x-small">' + $description + '</span>');
+
+            gtkLabel.append(gtkLabel2)
+        }
+
+        let settings = this.settings;
+
+        let toggle = new Gtk.Entry({hexpand: true, margin_start: 20});
+
+        toggle.set_text(settings.get_string($key));
+        toggle.connect('changed', (entry) => {
+            settings.set_string($key, entry.get_text());
+        });
+
+
+        return {toggle, gtkLabel};
     },
 
 

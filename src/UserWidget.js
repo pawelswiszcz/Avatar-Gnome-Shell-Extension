@@ -49,7 +49,7 @@ var UserWidget = GObject.registerClass(class UserWidget extends St.BoxLayout {
         if (0 == avatarIconSize) {
             this._avatar = new AvatarUserWidget(user);
         } else {
-            this._avatar = new Avatar(user, { 'iconSize': avatarIconSize });
+            this._avatar = new Avatar(user, {'iconSize': avatarIconSize});
         }
 
         this._avatar.x_align = Clutter.ActorAlign.CENTER;
@@ -380,10 +380,11 @@ var DoNotDisturbSwitch = GObject.registerClass({},
         }
 
         setIcon(value) {
+            let settings = ExtensionUtils.getSettings('org.gnome.shell.extensions.avatar');
             if (value == true) {
-                this._icon.set_icon_name('notifications-symbolic');
+                this._icon.set_icon_name(settings.get_string('dnd-icon-name') ?? 'notifications-symbolic');
             } else {
-                this._icon.set_icon_name('notifications-disabled-symbolic');
+                this._icon.set_icon_name(settings.get_string('dnd-icon-name-disabled') ?? 'notifications-disabled-symbolic');
             }
         }
     });

@@ -8,6 +8,11 @@ Available on gnome EGO:
 
 # Changelog
 
+### v 18
+
+- Added ability to change the missing notification icon (disabled option is also changeable)
+- MediaSection and MediaList to other components to be more customizable 
+
 ### v 17
 
 - Added ability to change the Avatar icon size

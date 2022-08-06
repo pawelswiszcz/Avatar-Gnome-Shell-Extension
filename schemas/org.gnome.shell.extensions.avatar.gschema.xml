@@ -50,6 +50,16 @@
       <summary>Use icon for dnd switch</summary>
       <description>Use icon for dnd switch</description>
     </key>
+    <key name="dnd-icon-name" type="s">
+      <default>"notifications-symbolic"</default>
+      <summary>Icon name for notification</summary>
+      <description>Icon name for notification</description>
+    </key>
+    <key name="dnd-icon-name-disabled" type="s">
+      <default>"notifications-disabled-symbolic"</default>
+      <summary>Icon name for disabled notification</summary>
+      <description>Icon name for disabled notification</description>
+    </key>
     <key name="buttons-position" type="i">
       <default>0</default>
       <summary>Set Position</summary>
