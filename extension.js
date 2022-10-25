@@ -53,7 +53,7 @@ let menuOpenHandlerId = null;
 function resetAfterChange() {
     //Disconnects systemMenu
 
-    let menu = shellVersion >= 43 ? Main.panel.statusArea['QuickSettingsMenu'] : Main.panel.statusArea['aggregateMenu'];
+    let menu = getSystemMenu();
 
     this.systemMenu = menu._system;
     if (this._menuOpenStateChangedId) {
@@ -88,6 +88,13 @@ function resetAfterChange() {
     topImageMenuItem = null;
     mediaMenuItem = null;
 
+}
+
+function getSystemMenu() {
+    if (shellVersion >= 43) {
+        return Main.panel.statusArea['QuickSettingsMenu'];
+    }
+    return Main.panel.statusArea['aggregateMenu'];
 }
 
 class Extension {
@@ -161,10 +168,10 @@ class Extension {
 
         iconMenuItem = this.iconMenuItem;
 
-        let menu = shellVersion >= 43 ? Main.panel.statusArea['QuickSettingsMenu'] : Main.panel.statusArea['aggregateMenu'];
+        let menu = getSystemMenu();
 
         //Adds item to menu
-        Main.panel.statusArea.aggregateMenu.menu.addMenuItem(this.iconMenuItem, this.settings.get_int('order-avatar'));
+        menu.menu.addMenuItem(this.iconMenuItem, this.settings.get_int('order-avatar'));
         this.systemMenu = menu._system;
 
         var userManager = AccountsService.UserManager.get_default();
@@ -186,7 +193,7 @@ class Extension {
 
         if (this.settings.get_boolean('show-media-center')) {
             this._mediaSectionMenuItem = new PopupMenu.PopupMenuItem('', { hover: false });
-            Main.panel.statusArea.aggregateMenu.menu.addMenuItem(this._mediaSectionMenuItem, this.settings.get_int('order-mpris'));
+            menu.menu.addMenuItem(this._mediaSectionMenuItem, this.settings.get_int('order-mpris'));
 
             this._mediaSection = new Mpris.MediaSection();
 
@@ -214,7 +221,7 @@ class Extension {
                 reactive: false,
                 can_focus: false,
             });
-            Main.panel.statusArea.aggregateMenu.menu.addMenuItem(this._topImageSectionMenuItem, this.settings.get_int('order-top-image'));
+            menu.menu.addMenuItem(this._topImageSectionMenuItem, this.settings.get_int('order-top-image'));
 
             this._topImageSection = new TopImage(this.settings.get_string('top-image'),
                 {
