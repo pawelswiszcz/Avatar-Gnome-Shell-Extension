@@ -18,7 +18,7 @@
 
 /* exported init */
 
-const {AccountsService, GObject, St, Clutter, GLib, Gio, Atk, Shell} = imports.gi;
+const { AccountsService, GObject, St, Clutter, GLib, Gio, Atk, Shell } = imports.gi;
 
 const ExtensionUtils = imports.misc.extensionUtils;
 const Main = imports.ui.main;
@@ -29,8 +29,11 @@ const PopupMenu = imports.ui.popupMenu;
 const _ = ExtensionUtils.gettext;
 const Me = ExtensionUtils.getCurrentExtension();
 
-const {UserWidget} = Me.imports.src.UserWidget;
-const {TopImage} = Me.imports.src.TopImage;
+const Config = imports.misc.config;
+const [major, minor] = Config.PACKAGE_VERSION.split('.').map(s => Number(s));
+
+const { UserWidget } = Me.imports.src.UserWidget;
+const { TopImage } = Me.imports.src.TopImage;
 const Mpris = Me.imports.src.MediaSection;
 
 //Creates temporary iconMenuItem variable
@@ -45,9 +48,16 @@ let calendarMpris = Main.panel.statusArea.dateMenu._messageList._mediaSection;
 
 let menuOpenHandlerId = null;
 
+function isGnome43() {
+    return major >= 43;
+}
+
 function resetAfterChange() {
     //Disconnects systemMenu
-    this.systemMenu = Main.panel.statusArea['aggregateMenu']._system;
+
+    let menu = isGnome43() ? Main.panel.statusArea['QuickSettingsMenu'] : Main.panel.statusArea['aggregateMenu'];
+
+    this.systemMenu = menu._system;
     if (this._menuOpenStateChangedId) {
         this.systemMenu.menu.disconnect(this._menuOpenStateChangedId);
         this._menuOpenStateChangedId = 0;
@@ -71,7 +81,7 @@ function resetAfterChange() {
     }
 
     if (menuOpenHandlerId) {
-        Main.panel.statusArea['aggregateMenu'].menu.disconnect(menuOpenHandlerId);
+        menu.menu.disconnect(menuOpenHandlerId);
         menuOpenHandlerId = null;
     }
 
@@ -124,8 +134,6 @@ class Extension {
             this.settings.connect(changedElements[i], function () {
                 resetAfterChange();
                 _that.updateExtensionAppearance();
-                /*in open menu is little buggy with preferences G43*/
-                /* Main.panel.statusArea.aggregateMenu.menu.open();*/
             });
         }
 
@@ -155,9 +163,11 @@ class Extension {
 
         iconMenuItem = this.iconMenuItem;
 
+        let menu = isGnome43() ? Main.panel.statusArea['QuickSettingsMenu'] : Main.panel.statusArea['aggregateMenu'];
+
         //Adds item to menu
         Main.panel.statusArea.aggregateMenu.menu.addMenuItem(this.iconMenuItem, this.settings.get_int('order-avatar'));
-        this.systemMenu = Main.panel.statusArea['aggregateMenu']._system;
+        this.systemMenu = menu._system;
 
         var userManager = AccountsService.UserManager.get_default();
         var user = userManager.get_user(GLib.get_user_name());
@@ -165,7 +175,7 @@ class Extension {
         let panelWidth = this.settings.get_int('set-custom-panel-menu-width');
 
         if (panelWidth > 0) {
-            Main.panel.statusArea['aggregateMenu'].menu.actor.width = this.settings.get_int('set-custom-panel-menu-width');
+            menu.menu.actor.width = this.settings.get_int('set-custom-panel-menu-width');
         }
 
         if (horizontalMode) {
@@ -177,7 +187,7 @@ class Extension {
         }
 
         if (this.settings.get_boolean('show-media-center')) {
-            this._mediaSectionMenuItem = new PopupMenu.PopupMenuItem('', {hover: false});
+            this._mediaSectionMenuItem = new PopupMenu.PopupMenuItem('', { hover: false });
             Main.panel.statusArea.aggregateMenu.menu.addMenuItem(this._mediaSectionMenuItem, this.settings.get_int('order-mpris'));
 
             this._mediaSection = new Mpris.MediaSection();
@@ -191,7 +201,7 @@ class Extension {
             mediaSectionMenuItem = this._mediaSectionMenuItem;
             mediaMenuItem = this._mediaSection;
 
-            menuOpenHandlerId = Main.panel.statusArea['aggregateMenu'].menu.connect('open-state-changed', this._mprisHideOnEmpty);
+            menuOpenHandlerId = menu.menu.connect('open-state-changed', this._mprisHideOnEmpty);
 
             calendarMpris._shouldShow = () => false;
             calendarMpris.hide();
