@@ -30,7 +30,7 @@ const _ = ExtensionUtils.gettext;
 const Me = ExtensionUtils.getCurrentExtension();
 
 const Config = imports.misc.config;
-const [major, minor] = Config.PACKAGE_VERSION.split('.').map(s => Number(s));
+const shellVersion = parseFloat(Config.PACKAGE_VERSION);
 
 const { UserWidget } = Me.imports.src.UserWidget;
 const { TopImage } = Me.imports.src.TopImage;
@@ -48,14 +48,12 @@ let calendarMpris = Main.panel.statusArea.dateMenu._messageList._mediaSection;
 
 let menuOpenHandlerId = null;
 
-function isGnome43() {
-    return major >= 43;
-}
+
 
 function resetAfterChange() {
     //Disconnects systemMenu
 
-    let menu = isGnome43() ? Main.panel.statusArea['QuickSettingsMenu'] : Main.panel.statusArea['aggregateMenu'];
+    let menu = shellVersion >= 43 ? Main.panel.statusArea['QuickSettingsMenu'] : Main.panel.statusArea['aggregateMenu'];
 
     this.systemMenu = menu._system;
     if (this._menuOpenStateChangedId) {
@@ -163,7 +161,7 @@ class Extension {
 
         iconMenuItem = this.iconMenuItem;
 
-        let menu = isGnome43() ? Main.panel.statusArea['QuickSettingsMenu'] : Main.panel.statusArea['aggregateMenu'];
+        let menu = shellVersion >= 43 ? Main.panel.statusArea['QuickSettingsMenu'] : Main.panel.statusArea['aggregateMenu'];
 
         //Adds item to menu
         Main.panel.statusArea.aggregateMenu.menu.addMenuItem(this.iconMenuItem, this.settings.get_int('order-avatar'));
