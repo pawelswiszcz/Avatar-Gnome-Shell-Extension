@@ -79,7 +79,7 @@ function resetAfterChange() {
     }
 
     if (menuOpenHandlerId) {
-        menu.menu.disconnect(menuOpenHandlerId);
+        menu.disconnect(menuOpenHandlerId);
         menuOpenHandlerId = null;
     }
 
@@ -94,7 +94,7 @@ function getSystemMenu() {
     if (shellVersion >= 43) {
         return Main.panel.statusArea['QuickSettingsMenu'];
     }
-    return Main.panel.statusArea['aggregateMenu'];
+    return Main.panel.statusArea['aggregateMenu'].menu;
 }
 
 class Extension {
@@ -171,7 +171,7 @@ class Extension {
         let menu = getSystemMenu();
 
         //Adds item to menu
-        menu.menu.addMenuItem(this.iconMenuItem, this.settings.get_int('order-avatar'));
+        menu.addMenuItem(this.iconMenuItem, this.settings.get_int('order-avatar'));
         this.systemMenu = menu._system;
 
         var userManager = AccountsService.UserManager.get_default();
@@ -180,7 +180,7 @@ class Extension {
         let panelWidth = this.settings.get_int('set-custom-panel-menu-width');
 
         if (panelWidth > 0) {
-            menu.menu.actor.width = this.settings.get_int('set-custom-panel-menu-width');
+            menu.actor.width = this.settings.get_int('set-custom-panel-menu-width');
         }
 
         if (horizontalMode) {
@@ -193,7 +193,7 @@ class Extension {
 
         if (this.settings.get_boolean('show-media-center')) {
             this._mediaSectionMenuItem = new PopupMenu.PopupMenuItem('', { hover: false });
-            menu.menu.addMenuItem(this._mediaSectionMenuItem, this.settings.get_int('order-mpris'));
+            menu.addMenuItem(this._mediaSectionMenuItem, this.settings.get_int('order-mpris'));
 
             this._mediaSection = new Mpris.MediaSection();
 
@@ -206,7 +206,7 @@ class Extension {
             mediaSectionMenuItem = this._mediaSectionMenuItem;
             mediaMenuItem = this._mediaSection;
 
-            menuOpenHandlerId = menu.menu.connect('open-state-changed', this._mprisHideOnEmpty);
+            menuOpenHandlerId = menu.connect('open-state-changed', this._mprisHideOnEmpty);
 
             calendarMpris._shouldShow = () => false;
             calendarMpris.hide();
@@ -221,7 +221,7 @@ class Extension {
                 reactive: false,
                 can_focus: false,
             });
-            menu.menu.addMenuItem(this._topImageSectionMenuItem, this.settings.get_int('order-top-image'));
+            menu.addMenuItem(this._topImageSectionMenuItem, this.settings.get_int('order-top-image'));
 
             this._topImageSection = new TopImage(this.settings.get_string('top-image'),
                 {
