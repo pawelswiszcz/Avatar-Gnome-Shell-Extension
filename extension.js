@@ -92,7 +92,7 @@ function resetAfterChange() {
 
 function getSystemMenu() {
     if (shellVersion >= 43) {
-        return Main.panel.statusArea['QuickSettingsMenu'];
+        return Main.panel.statusArea['quickSettings'].menu;
     }
     return Main.panel.statusArea['aggregateMenu'].menu;
 }
