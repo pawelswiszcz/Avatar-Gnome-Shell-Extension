@@ -8,6 +8,9 @@ Available on gnome EGO:
 
 # Changelog
 
+### v 19
+- Added Gnome 43 support, Thanks [@bitseater](https://github.com/bitseater '@bitseater') for testing
+
 ### v 18
 
 - Added ability to change the missing notification icon (disabled option is also changeable)
