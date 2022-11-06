@@ -1,6 +1,6 @@
 # Avatar-Gnome-Shell-Extension
 
-Adds an avatar, primary system buttons, mpris media notifications and top image to the top panel.  Supports Gnome 41 and 42
+Adds an avatar, primary system buttons, mpris media notifications and top image to the top panel.  Supports Gnome 41, 42 and 43
 
 Available on gnome EGO:
 
