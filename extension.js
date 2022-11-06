@@ -18,7 +18,7 @@
 
 /* exported init */
 
-const {AccountsService, GObject, St, Clutter, GLib, Gio, Atk, Shell} = imports.gi;
+const { AccountsService, GObject, St, Clutter, GLib, Gio, Atk, Shell } = imports.gi;
 
 const ExtensionUtils = imports.misc.extensionUtils;
 const Main = imports.ui.main;
@@ -29,8 +29,11 @@ const PopupMenu = imports.ui.popupMenu;
 const _ = ExtensionUtils.gettext;
 const Me = ExtensionUtils.getCurrentExtension();
 
-const {UserWidget} = Me.imports.src.UserWidget;
-const {TopImage} = Me.imports.src.TopImage;
+const Config = imports.misc.config;
+const shellVersion = parseFloat(Config.PACKAGE_VERSION);
+
+const { UserWidget } = Me.imports.src.UserWidget;
+const { TopImage } = Me.imports.src.TopImage;
 const Mpris = Me.imports.src.MediaSection;
 
 //Creates temporary iconMenuItem variable
@@ -45,9 +48,14 @@ let calendarMpris = Main.panel.statusArea.dateMenu._messageList._mediaSection;
 
 let menuOpenHandlerId = null;
 
+
+
 function resetAfterChange() {
     //Disconnects systemMenu
-    this.systemMenu = Main.panel.statusArea['aggregateMenu']._system;
+
+    let menu = getSystemMenu();
+
+    this.systemMenu = menu._system;
     if (this._menuOpenStateChangedId) {
         this.systemMenu.menu.disconnect(this._menuOpenStateChangedId);
         this._menuOpenStateChangedId = 0;
@@ -71,7 +79,7 @@ function resetAfterChange() {
     }
 
     if (menuOpenHandlerId) {
-        Main.panel.statusArea['aggregateMenu'].menu.disconnect(menuOpenHandlerId);
+        menu.disconnect(menuOpenHandlerId);
         menuOpenHandlerId = null;
     }
 
@@ -80,6 +88,13 @@ function resetAfterChange() {
     topImageMenuItem = null;
     mediaMenuItem = null;
 
+}
+
+function getSystemMenu() {
+    if (shellVersion >= 43) {
+        return Main.panel.statusArea['quickSettings'].menu;
+    }
+    return Main.panel.statusArea['aggregateMenu'].menu;
 }
 
 class Extension {
@@ -124,8 +139,6 @@ class Extension {
             this.settings.connect(changedElements[i], function () {
                 resetAfterChange();
                 _that.updateExtensionAppearance();
-                /*in open menu is little buggy with preferences G43*/
-                /* Main.panel.statusArea.aggregateMenu.menu.open();*/
             });
         }
 
@@ -155,9 +168,11 @@ class Extension {
 
         iconMenuItem = this.iconMenuItem;
 
+        let menu = getSystemMenu();
+
         //Adds item to menu
-        Main.panel.statusArea.aggregateMenu.menu.addMenuItem(this.iconMenuItem, this.settings.get_int('order-avatar'));
-        this.systemMenu = Main.panel.statusArea['aggregateMenu']._system;
+        menu.addMenuItem(this.iconMenuItem, this.settings.get_int('order-avatar'));
+        this.systemMenu = menu._system;
 
         var userManager = AccountsService.UserManager.get_default();
         var user = userManager.get_user(GLib.get_user_name());
@@ -165,7 +180,7 @@ class Extension {
         let panelWidth = this.settings.get_int('set-custom-panel-menu-width');
 
         if (panelWidth > 0) {
-            Main.panel.statusArea['aggregateMenu'].menu.actor.width = this.settings.get_int('set-custom-panel-menu-width');
+            menu.actor.width = this.settings.get_int('set-custom-panel-menu-width');
         }
 
         if (horizontalMode) {
@@ -177,8 +192,8 @@ class Extension {
         }
 
         if (this.settings.get_boolean('show-media-center')) {
-            this._mediaSectionMenuItem = new PopupMenu.PopupMenuItem('', {hover: false});
-            Main.panel.statusArea.aggregateMenu.menu.addMenuItem(this._mediaSectionMenuItem, this.settings.get_int('order-mpris'));
+            this._mediaSectionMenuItem = new PopupMenu.PopupMenuItem('', { hover: false });
+            menu.addMenuItem(this._mediaSectionMenuItem, this.settings.get_int('order-mpris'));
 
             this._mediaSection = new Mpris.MediaSection();
 
@@ -191,7 +206,7 @@ class Extension {
             mediaSectionMenuItem = this._mediaSectionMenuItem;
             mediaMenuItem = this._mediaSection;
 
-            menuOpenHandlerId = Main.panel.statusArea['aggregateMenu'].menu.connect('open-state-changed', this._mprisHideOnEmpty);
+            menuOpenHandlerId = menu.connect('open-state-changed', this._mprisHideOnEmpty);
 
             calendarMpris._shouldShow = () => false;
             calendarMpris.hide();
@@ -206,7 +221,7 @@ class Extension {
                 reactive: false,
                 can_focus: false,
             });
-            Main.panel.statusArea.aggregateMenu.menu.addMenuItem(this._topImageSectionMenuItem, this.settings.get_int('order-top-image'));
+            menu.addMenuItem(this._topImageSectionMenuItem, this.settings.get_int('order-top-image'));
 
             this._topImageSection = new TopImage(this.settings.get_string('top-image'),
                 {
