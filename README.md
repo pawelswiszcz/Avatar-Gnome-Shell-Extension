@@ -56,3 +56,8 @@ Available on gnome EGO:
 # Screenshots
 
 <img src="assets/avatar.png">
+
+### Notes
+
+Extension was based on [Big Avatar](https://extensions.gnome.org/extension/3488/big-avatar/) 
+ 
