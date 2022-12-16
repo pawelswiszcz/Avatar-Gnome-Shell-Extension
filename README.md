@@ -60,6 +60,8 @@ Available on gnome EGO:
 
 <img src="assets/avatar.png">
 
+<img src="assets/avatar-gnome-43.png">
+
 ### Notes
 
 Extension was based on [Big Avatar](https://extensions.gnome.org/extension/3488/big-avatar/) 
