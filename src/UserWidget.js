@@ -292,7 +292,6 @@ var SystemButton = GObject.registerClass(
                 y_align: Clutter.ActorAlign.CENTER,
                 x_expand: true,
             });
-            this.add_style_class_name('popup-menu-item');
             this.bind_property('hover', this, 'active', GObject.BindingFlags.SYNC_CREATE);
             this.opacity = 230;
         }
@@ -306,7 +305,7 @@ var SystemButton = GObject.registerClass(
             if (activeChanged) {
                 this._active = active;
                 if (active) {
-                    this.add_style_class_name('selected');
+                    this.add_style_class_name('popup-menu-item active');
                     this.opacity = 255;
                     if (this.can_focus) {
                         this.grab_key_focus();
@@ -314,14 +313,14 @@ var SystemButton = GObject.registerClass(
 
                 } else {
                     this.opacity = 230;
-                    this.remove_style_class_name('selected');
+                    this.remove_style_class_name('popup-menu-item active');
                     // Remove the CSS active state if the user press the button and
                     // while holding moves to another menu item, so we don't paint all items.
                     // The correct behaviour would be to set the new item with the CSS
                     // active state as well, but button-press-event is not triggered,
                     // so we should track it in our own, which would involve some work
                     // in the container
-                    this.remove_style_pseudo_class('active');
+                    //this.remove_style_pseudo_class('active');
                 }
                 this.notify('active');
             }

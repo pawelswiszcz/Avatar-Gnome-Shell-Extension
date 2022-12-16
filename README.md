@@ -8,6 +8,9 @@ Available on gnome EGO:
 
 # Changelog
 
+### v 21
+- Fixed buttons style for gnome 43. Fixed Mpris `reactive` background
+
 ### v 20
 - Fixed Mpris media. Using vanilla implementation instead of `Me.imports.src.MediaSection`;
 

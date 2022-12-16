@@ -192,7 +192,13 @@ class Extension {
         }
 
         if (this.settings.get_boolean('show-media-center')) {
-            this._mediaSectionMenuItem = new PopupMenu.PopupMenuItem('', { hover: false });
+            this._mediaSectionMenuItem = new PopupMenu.PopupMenuItem('', {
+                hover: false,
+                reactive: false,
+                activate: true,
+                style_class: null,
+                can_focus: true,
+            });
             menu.addMenuItem(this._mediaSectionMenuItem, this.settings.get_int('order-mpris'));
 
             this._mediaSection = new Mpris.MediaSection();
