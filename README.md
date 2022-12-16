@@ -8,6 +8,9 @@ Available on gnome EGO:
 
 # Changelog
 
+### v 20
+- Fixed Mpris media. Using vanilla implementation instead of `Me.imports.src.MediaSection`;
+
 ### v 19
 - Added Gnome 43 support, Thanks [@bitseater](https://github.com/bitseater '@bitseater') for testing
 

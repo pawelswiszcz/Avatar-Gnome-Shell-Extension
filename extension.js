@@ -34,7 +34,7 @@ const shellVersion = parseFloat(Config.PACKAGE_VERSION);
 
 const { UserWidget } = Me.imports.src.UserWidget;
 const { TopImage } = Me.imports.src.TopImage;
-const Mpris = Me.imports.src.MediaSection;
+const Mpris = imports.ui.mpris;
 
 //Creates temporary iconMenuItem variable
 let iconMenuItem = null;
