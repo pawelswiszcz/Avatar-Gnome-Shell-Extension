@@ -78,6 +78,11 @@ function resetAfterChange() {
         topImageMenuItem.destroy();
     }
 
+    if (mediaSectionMenuItem) {
+        mediaSectionMenuItem.destroy();
+    }
+
+
     if (menuOpenHandlerId) {
         menu.disconnect(menuOpenHandlerId);
         menuOpenHandlerId = null;
