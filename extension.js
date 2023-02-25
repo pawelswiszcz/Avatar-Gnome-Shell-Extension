@@ -158,64 +158,50 @@ class Extension {
 
     updateExtensionAppearance() {
         //Creates new PopupMenuItem
-        this.iconMenuItem = new PopupMenu.PopupMenuItem('', {
+        this.iconMenuItem = new PopupMenu.PopupMenuItem('',{
             hover: false,
             reactive: false,
             can_focus: false,
+            style_class: 'quick-toggle-menu',
         });
 
         let horizontalMode = this.settings.get_boolean('horizontal-mode');
 
 
-        this.iconMenuItem.add_child(new St.BoxLayout({
-            x_expand: true, y_expand: true, vertical: true, style_class: "user-box",
-        }));
+        let mainBox = new St.BoxLayout({
+            x_expand: true, 
+            y_expand: true, 
+            vertical: true, 
+            style_class: "main-box",
+        });
 
-        iconMenuItem = this.iconMenuItem;
 
         let menu = getSystemMenu();
-
-        //Adds item to menu
-        menu.addMenuItem(this.iconMenuItem, this.settings.get_int('order-avatar'));
         this.systemMenu = menu._system;
 
-        var userManager = AccountsService.UserManager.get_default();
-        var user = userManager.get_user(GLib.get_user_name());
 
         let panelWidth = this.settings.get_int('set-custom-panel-menu-width');
 
         if (panelWidth > 0) {
             menu.actor.width = this.settings.get_int('set-custom-panel-menu-width');
         }
+               
+        let userManager = AccountsService.UserManager.get_default();
+        let user = userManager.get_user(GLib.get_user_name());
 
         if (horizontalMode) {
             let avatar = this.setHorizontalStyle(user);
-            this.iconMenuItem.actor.get_last_child().add_child(avatar);
+            mainBox.add_child(avatar);
         } else {
             let avatar = this.setVerticalStyle(user);
-            this.iconMenuItem.actor.get_last_child().add_child(avatar);
+            mainBox.add_child(avatar);
         }
 
         if (this.settings.get_boolean('show-media-center')) {
-            this._mediaSectionMenuItem = new PopupMenu.PopupMenuItem('', {
-                hover: false,
-                reactive: false,
-                activate: true,
-                style_class: null,
-                can_focus: true,
-            });
-            menu.addMenuItem(this._mediaSectionMenuItem, this.settings.get_int('order-mpris'));
 
             this._mediaSection = new Mpris.MediaSection();
 
-            this._mediaSectionMenuItem.add_child(new St.BoxLayout({
-                x_expand: true, y_expand: true, vertical: true, style_class: "multimedia-box",
-            }));
-
-            this._mediaSectionMenuItem.actor.get_last_child().add_child(this._mediaSection);
-
-            mediaSectionMenuItem = this._mediaSectionMenuItem;
-            mediaMenuItem = this._mediaSection;
+            mainBox.add_child(this._mediaSection);
 
             menuOpenHandlerId = menu.connect('open-state-changed', this._mprisHideOnEmpty);
 
@@ -227,12 +213,6 @@ class Extension {
         }
 
         if (this.settings.get_boolean('show-top-image')) {
-            this._topImageSectionMenuItem = new PopupMenu.PopupMenuItem('', {
-                hover: false,
-                reactive: false,
-                can_focus: false,
-            });
-            menu.addMenuItem(this._topImageSectionMenuItem, this.settings.get_int('order-top-image'));
 
             this._topImageSection = new TopImage(this.settings.get_string('top-image'),
                 {
@@ -241,14 +221,19 @@ class Extension {
                 }
             );
 
-            this._topImageSectionMenuItem.add_child(new St.BoxLayout({
-                x_expand: true, y_expand: true, vertical: true, style_class: "top-image-box",
-            }));
 
-            this._topImageSectionMenuItem.actor.get_last_child().add_child(this._topImageSection);
-
-            topImageMenuItem = this._topImageSectionMenuItem;
+            mainBox.add_child(this._topImageSection);
         }
+
+       // this.iconMenuItem.add_child(mainBox);
+
+        iconMenuItem = this.iconMenuItem;
+
+        //Adds item to menu
+        //menu.addMenuItem(this.iconMenuItem, this.settings.get_int('order-avatar'));
+
+        Main.panel.statusArea['quickSettings'].add_child(mainBox)
+
     }
 
     setHorizontalStyle(user) {

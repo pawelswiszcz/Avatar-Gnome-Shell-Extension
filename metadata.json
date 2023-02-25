@@ -1,5 +1,5 @@
 {
-  "uuid": "avatar@pawel.swiszcz.com",
+  "uuid": "avatar-dev@pawel.swiszcz.com",
   "name": "Avatar",
   "description": "Add Avatar, MPRIS and Top image into the panel. Options to change: \n * Avatar (horizontal/vertical, shades, visibility of username and hostname) \n * Primary buttons \n * MPRIS \n * Top image (can be Your own image from system) ",
   "version": 22,
