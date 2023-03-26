@@ -8,6 +8,12 @@ Available on gnome EGO:
 
 # Changelog
 
+### v 23
+- Fixed order of elements
+- Added Detached mode, show avatar box on the top and outline class
+- Refactoring
+- Drop shell support lower than 43. If You are using gnome shell < 43 use https://github.com/pawelswiszcz/Avatar-Gnome-Shell-Extension/tree/gnome-loe-43 branch
+
 ### v 22
 - Fixed destroying `mediaSectionMenuItem`
 
@@ -26,4 +32,5 @@ Available on gnome EGO:
 ### Notes
 
 Extension was based on [Big Avatar](https://extensions.gnome.org/extension/3488/big-avatar/) 
+Code used https://github.com/qwreey75/quick-settings-tweaks
  

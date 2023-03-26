@@ -48,6 +48,13 @@ let calendarMpris = Main.panel.statusArea.dateMenu._messageList._mediaSection;
 
 let menuOpenHandlerId = null;
 
+const {
+    QuickSettingsGrid,
+    QuickSettingsBox,
+    QuickSettingsActor,
+    QuickSettingsShutdownMenuBox
+} = Me.imports.src.gnome
+
 
 
 function resetAfterChange() {
@@ -55,9 +62,9 @@ function resetAfterChange() {
 
     let menu = getSystemMenu();
 
-    this.systemMenu = menu._system;
+    let systemMenu = menu._system;
     if (this._menuOpenStateChangedId) {
-        this.systemMenu.menu.disconnect(this._menuOpenStateChangedId);
+        systemMenu.menu.disconnect(this._menuOpenStateChangedId);
         this._menuOpenStateChangedId = 0;
     }
     //Destroys iconMenuItem (basically removes the option from the menu)
@@ -114,6 +121,9 @@ class Extension {
 
         let changedElements = [
             'changed::horizontal-mode',
+            'changed::show-avatar-on-top',
+            'changed::add-outline-class',
+            'changed::detached-mode',
             'changed::show-name',
             'changed::name-style-dark',
             'changed::avatar-shadow',
@@ -157,30 +167,26 @@ class Extension {
 
 
     updateExtensionAppearance() {
-        //Creates new PopupMenuItem
-        this.iconMenuItem = new PopupMenu.PopupMenuItem('', {
-            hover: false,
-            reactive: false,
-            can_focus: false,
+
+        const itemMenuIconClass = this.settings.get_boolean('add-outline-class') ? "popup-menu-content quick-settings avatar-separated" : "margin-top-10"
+
+        iconMenuItem = new St.BoxLayout({
+            vertical: true,
+            style_class: itemMenuIconClass
         });
 
-        let horizontalMode = this.settings.get_boolean('horizontal-mode');
+        const methods = [
+            { name: 'addAvatar', number: this.settings.get_int('order-avatar') },
+            { name: 'addMpris', number: this.settings.get_int('order-mpris') },
+            { name: 'addTopImage', number: this.settings.get_int('order-top-image') }
+        ];
 
+        methods.sort((a, b) => a.number - b.number);
 
-        this.iconMenuItem.add_child(new St.BoxLayout({
-            x_expand: true, y_expand: true, vertical: true, style_class: "user-box",
-        }));
-
-        iconMenuItem = this.iconMenuItem;
-
-        let menu = getSystemMenu();
-
-        //Adds item to menu
-        menu.addMenuItem(this.iconMenuItem, this.settings.get_int('order-avatar'));
-        this.systemMenu = menu._system;
-
-        var userManager = AccountsService.UserManager.get_default();
-        var user = userManager.get_user(GLib.get_user_name());
+        methods.forEach(method => {
+            const methodName = method.name;
+            this[methodName](iconMenuItem);
+        });
 
         let panelWidth = this.settings.get_int('set-custom-panel-menu-width');
 
@@ -188,67 +194,39 @@ class Extension {
             menu.actor.width = this.settings.get_int('set-custom-panel-menu-width');
         }
 
-        if (horizontalMode) {
-            let avatar = this.setHorizontalStyle(user);
-            this.iconMenuItem.actor.get_last_child().add_child(avatar);
+        
+        QuickSettingsBox.add_child(iconMenuItem)
+
+        const detachedMode = this.settings.get_boolean('detached-mode');
+
+        this.boxBackupClass = QuickSettingsBox.style_class;
+
+        this.actorBackupClass = QuickSettingsActor.style_class;
+
+        if (detachedMode) {
+            QuickSettingsBox.style_class = "";
+            QuickSettingsActor.style_class = " " + QuickSettingsActor.style_class;
+
+            this.gridBackupClass = QuickSettingsGrid.style_class;
+            QuickSettingsGrid.style_class = QuickSettingsGrid.style_class + " popup-menu-content quick-settings";
+
+            let quickSettingsModal = QuickSettingsBox.first_child;
+            
+            const top = this.settings.get_boolean('show-avatar-on-top');
+
+            if (top) {
+                QuickSettingsBox.remove_child(quickSettingsModal);
+                QuickSettingsBox.add_child(iconMenuItem);
+                QuickSettingsBox.add_child(quickSettingsModal);
+            } else {
+                QuickSettingsBox.add_child(iconMenuItem);
+                QuickSettingsBox.add_child(quickSettingsModal);
+            }
         } else {
-            let avatar = this.setVerticalStyle(user);
-            this.iconMenuItem.actor.get_last_child().add_child(avatar);
+            QuickSettingsBox.style_class = this.boxBackupClass;
+            QuickSettingsActor.style_class = this.actorBackupClass;
         }
 
-        if (this.settings.get_boolean('show-media-center')) {
-            this._mediaSectionMenuItem = new PopupMenu.PopupMenuItem('', {
-                hover: false,
-                reactive: false,
-                activate: true,
-                style_class: null,
-                can_focus: true,
-            });
-            menu.addMenuItem(this._mediaSectionMenuItem, this.settings.get_int('order-mpris'));
-
-            this._mediaSection = new Mpris.MediaSection();
-
-            this._mediaSectionMenuItem.add_child(new St.BoxLayout({
-                x_expand: true, y_expand: true, vertical: true, style_class: "multimedia-box",
-            }));
-
-            this._mediaSectionMenuItem.actor.get_last_child().add_child(this._mediaSection);
-
-            mediaSectionMenuItem = this._mediaSectionMenuItem;
-            mediaMenuItem = this._mediaSection;
-
-            menuOpenHandlerId = menu.connect('open-state-changed', this._mprisHideOnEmpty);
-
-            calendarMpris._shouldShow = () => false;
-            calendarMpris.hide();
-        } else {
-            calendarMpris._shouldShow = () => true;
-            calendarMpris.show();
-        }
-
-        if (this.settings.get_boolean('show-top-image')) {
-            this._topImageSectionMenuItem = new PopupMenu.PopupMenuItem('', {
-                hover: false,
-                reactive: false,
-                can_focus: false,
-            });
-            menu.addMenuItem(this._topImageSectionMenuItem, this.settings.get_int('order-top-image'));
-
-            this._topImageSection = new TopImage(this.settings.get_string('top-image'),
-                {
-                    width: this.settings.get_int('top-image-size-width'),
-                    height: this.settings.get_int('top-image-size-height')
-                }
-            );
-
-            this._topImageSectionMenuItem.add_child(new St.BoxLayout({
-                x_expand: true, y_expand: true, vertical: true, style_class: "top-image-box",
-            }));
-
-            this._topImageSectionMenuItem.actor.get_last_child().add_child(this._topImageSection);
-
-            topImageMenuItem = this._topImageSectionMenuItem;
-        }
     }
 
     setHorizontalStyle(user) {
@@ -311,6 +289,77 @@ class Extension {
         else
             mediaSectionMenuItem.show();
     };
+
+    addAvatar(iconMenuItem) {
+        let horizontalMode = this.settings.get_boolean('horizontal-mode');
+
+        let userManager = AccountsService.UserManager.get_default();
+        let user = userManager.get_user(GLib.get_user_name());
+
+        if (horizontalMode) {
+            let avatar = this.setHorizontalStyle(user);
+
+            let avatarBox = new St.BoxLayout({
+                vertical: true,
+                style_class: "avatar-box margin-bottom-10"
+            });
+
+            avatarBox.add_child(avatar);
+            iconMenuItem.add_child(avatarBox);
+
+        } else {
+            let avatar = this.setVerticalStyle(user);
+            iconMenuItem.add_child(avatar);
+        }
+    }
+    addMpris(iconMenuItem) {
+
+        if (this.settings.get_boolean('show-media-center')) {
+
+            let menu = getSystemMenu();
+
+            this._mediaSection = new Mpris.MediaSection();
+
+            let mediaBox = new St.BoxLayout({
+                vertical: true,
+                style_class: "media-box margin-bottom-10"
+            });
+
+            mediaBox.add_child(this._mediaSection);
+
+            iconMenuItem.add_child(mediaBox);
+
+            menuOpenHandlerId = menu.connect('open-state-changed', this._mprisHideOnEmpty);
+
+            calendarMpris._shouldShow = () => false;
+            calendarMpris.hide();
+        } else {
+            calendarMpris._shouldShow = () => true;
+            calendarMpris.show();
+        }
+    }
+    addTopImage(iconMenuItem) {
+
+        if (this.settings.get_boolean('show-top-image')) {
+
+            this._topImageSection = new TopImage(this.settings.get_string('top-image'),
+                {
+                    width: this.settings.get_int('top-image-size-width'),
+                    height: this.settings.get_int('top-image-size-height')
+                }
+            );
+
+            let imageBox = new St.BoxLayout({
+                vertical: true,
+                style_class: "image-box margin-bottom-10"
+            });
+
+            imageBox.add_child(this._topImageSection);
+
+
+            iconMenuItem.add_child(imageBox);
+        }
+    }
 }
 
 function init(meta) {
