@@ -7,6 +7,11 @@
       <summary>Horizontal mode</summary>
       <description>Horizontal mode</description>
     </key>
+    <key name="show-avatar-on-top" type="b">
+      <default>true</default>
+      <summary>Show avatar box on the top</summary>
+      <description>Show avatar box on the top</description>
+    </key>
     <key name="show-name" type="b">
       <default>true</default>
       <summary>Show user name first and last</summary>

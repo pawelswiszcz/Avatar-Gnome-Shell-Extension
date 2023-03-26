@@ -30,7 +30,7 @@ var UserWidget = GObject.registerClass(class UserWidget extends St.BoxLayout {
 
         let vertical = orientation === Clutter.Orientation.VERTICAL;
         let xAlign = vertical ? Clutter.ActorAlign.CENTER : Clutter.ActorAlign.START;
-        let styleClass = vertical ? 'user-widget vertical' : 'user-widget horizontal';
+        let styleClass = vertical ? 'user-widget vertical ' : 'user-widget horizontal';
 
         if (useDark) {
             styleClass += ' dark';

@@ -3,6 +3,21 @@
     color: #222222;
 }
 
+
+.user-widget{
+    padding: 0 !important;
+    margin: 0 !important;
+}
+
+.margin-top-10{
+    margin-top: 10px !important;
+}
+
+
+.margin-bottom-10{
+    margin-bottom: 10px !important;
+}
+
 .user-widget.shadow .user-icon {
     box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.5), 0 6px 20px 0 rgba(0, 0, 0, 0.5);
 }

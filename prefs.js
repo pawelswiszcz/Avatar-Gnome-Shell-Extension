@@ -70,6 +70,7 @@ const AvatarSettings = new GObject.Class({
 
         let prefsButtons = [
             this.getSwitch('horizontal-mode', 'Enable horizontal mode:'),
+            this.getSwitch('show-avatar-on-top', 'Show avatar box on the top'),
             this.getSpinButton(
                 'set-custom-panel-menu-width', 'Set custom panel menu width:',
                 0, 2000, 'set to 0 to use Your default value, needs restart gnome shell ALT+F2 -> r'

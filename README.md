@@ -8,6 +8,11 @@ Available on gnome EGO:
 
 # Changelog
 
+### v 23
+- Fixed order of elements, 
+- Added "set on top flag" to push Avatar box on the top or on the bottom
+- Refactoring
+
 ### v 22
 - Fixed destroying `mediaSectionMenuItem`
 
@@ -26,4 +31,5 @@ Available on gnome EGO:
 ### Notes
 
 Extension was based on [Big Avatar](https://extensions.gnome.org/extension/3488/big-avatar/) 
+Code used https://github.com/qwreey75/quick-settings-tweaks
  
