@@ -25,6 +25,8 @@ Available on gnome EGO:
 
 # Screenshots
 
+<img src="assets/avatar-detached.png">
+
 <img src="assets/avatar.png">
 
 <img src="assets/avatar-gnome-43.png">
