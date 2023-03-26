@@ -122,6 +122,8 @@ class Extension {
         let changedElements = [
             'changed::horizontal-mode',
             'changed::show-avatar-on-top',
+            'changed::add-outline-class',
+            'changed::detached-mode',
             'changed::show-name',
             'changed::name-style-dark',
             'changed::avatar-shadow',
@@ -166,9 +168,7 @@ class Extension {
 
     updateExtensionAppearance() {
 
-        let top = this.settings.get_boolean('show-avatar-on-top');
-
-        let itemMenuIconClass = "popup-menu-content quick-settings avatar-separated"
+        const itemMenuIconClass = this.settings.get_boolean('add-outline-class') ? "popup-menu-content quick-settings avatar-separated" : "margin-top-10"
 
         iconMenuItem = new St.BoxLayout({
             vertical: true,
@@ -194,30 +194,37 @@ class Extension {
             menu.actor.width = this.settings.get_int('set-custom-panel-menu-width');
         }
 
+        
         QuickSettingsBox.add_child(iconMenuItem)
 
-        this.boxBackupClass = QuickSettingsBox.style_class
-        QuickSettingsBox.style_class = ""
+        const detachedMode = this.settings.get_boolean('detached-mode');
 
-        this.actorBackupClass = QuickSettingsActor.style_class
-        QuickSettingsActor.style_class =
-            " "
-            + QuickSettingsActor.style_class
+        this.boxBackupClass = QuickSettingsBox.style_class;
 
-        this.gridBackupClass = QuickSettingsGrid.style_class
-        QuickSettingsGrid.style_class =
-            QuickSettingsGrid.style_class
-            + " popup-menu-content quick-settings"
+        this.actorBackupClass = QuickSettingsActor.style_class;
 
-        let quickSettingsModal = QuickSettingsBox.first_child
+        if (detachedMode) {
+            QuickSettingsBox.style_class = "";
+            QuickSettingsActor.style_class = " " + QuickSettingsActor.style_class;
 
-        if (top) {
-            QuickSettingsBox.remove_child(quickSettingsModal)
-            QuickSettingsBox.add_child(iconMenuItem)
-            QuickSettingsBox.add_child(quickSettingsModal)
+            this.gridBackupClass = QuickSettingsGrid.style_class;
+            QuickSettingsGrid.style_class = QuickSettingsGrid.style_class + " popup-menu-content quick-settings";
+
+            let quickSettingsModal = QuickSettingsBox.first_child;
+            
+            const top = this.settings.get_boolean('show-avatar-on-top');
+
+            if (top) {
+                QuickSettingsBox.remove_child(quickSettingsModal);
+                QuickSettingsBox.add_child(iconMenuItem);
+                QuickSettingsBox.add_child(quickSettingsModal);
+            } else {
+                QuickSettingsBox.add_child(iconMenuItem);
+                QuickSettingsBox.add_child(quickSettingsModal);
+            }
         } else {
-            QuickSettingsBox.add_child(iconMenuItem)
-            QuickSettingsBox.add_child(quickSettingsModal)
+            QuickSettingsBox.style_class = this.boxBackupClass;
+            QuickSettingsActor.style_class = this.actorBackupClass;
         }
 
     }

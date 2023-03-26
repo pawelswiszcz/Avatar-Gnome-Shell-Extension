@@ -7,10 +7,20 @@
       <summary>Horizontal mode</summary>
       <description>Horizontal mode</description>
     </key>
+    <key name="detached-mode" type="b">
+      <default>true</default>
+      <summary>Detached mode</summary>
+      <description>Detached mode</description>
+    </key>
     <key name="show-avatar-on-top" type="b">
       <default>true</default>
       <summary>Show avatar box on the top</summary>
       <description>Show avatar box on the top</description>
+    </key>
+    <key name="add-outline-class" type="b">
+      <default>true</default>
+      <summary>Add outline class</summary>
+      <description>Add outline class</description>
     </key>
     <key name="show-name" type="b">
       <default>true</default>

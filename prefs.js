@@ -70,7 +70,9 @@ const AvatarSettings = new GObject.Class({
 
         let prefsButtons = [
             this.getSwitch('horizontal-mode', 'Enable horizontal mode:'),
-            this.getSwitch('show-avatar-on-top', 'Show avatar box on the top'),
+            this.getSwitch('detached-mode', 'Detached mode', 'of not working please restart gnome shell ALT+F2 -> r'),
+            this.getSwitch('show-avatar-on-top', 'Show avatar box on the top', 'only for detached mode'),
+            this.getSwitch('add-outline-class', 'Add outline class', 'use this option for detached mode'),
             this.getSpinButton(
                 'set-custom-panel-menu-width', 'Set custom panel menu width:',
                 0, 2000, 'set to 0 to use Your default value, needs restart gnome shell ALT+F2 -> r'

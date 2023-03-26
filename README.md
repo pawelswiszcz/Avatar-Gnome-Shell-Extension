@@ -9,9 +9,10 @@ Available on gnome EGO:
 # Changelog
 
 ### v 23
-- Fixed order of elements, 
-- Added "set on top flag" to push Avatar box on the top or on the bottom
+- Fixed order of elements
+- Added Detached mode, show avatar box on the top and outline class
 - Refactoring
+- Drop shell support lower than 43. If You are using gnome shell < 43 use https://github.com/pawelswiszcz/Avatar-Gnome-Shell-Extension/tree/gnome-loe-43 branch
 
 ### v 22
 - Fixed destroying `mediaSectionMenuItem`
