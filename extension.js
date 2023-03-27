@@ -191,6 +191,7 @@ class Extension {
         let panelWidth = this.settings.get_int('set-custom-panel-menu-width');
 
         if (panelWidth > 0) {
+            let menu = getSystemMenu();
             menu.actor.width = this.settings.get_int('set-custom-panel-menu-width');
         }
 
