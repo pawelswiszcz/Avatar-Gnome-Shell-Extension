@@ -8,6 +8,9 @@ Available on gnome EGO:
 
 # Changelog
 
+### v 24 
+- Fixed menu is not defined
+
 ### v 23
 - Fixed order of elements
 - Added Detached mode, show avatar box on the top and outline class
