@@ -2,9 +2,10 @@
   "uuid": "avatar@pawel.swiszcz.com",
   "name": "Avatar",
   "description": "Add Avatar, MPRIS and Top image into the panel. Options to change: \n * Avatar (horizontal/vertical, shades, visibility of username and hostname) \n * Primary buttons \n * MPRIS \n * Top image (can be Your own image from system) ",
-  "version": 24,
+  "version": 25,
   "shell-version": [
-    "43"
+    "43",
+    "44"
   ],
   "url": "https://github.com/pawelswiszcz/Avatar-Gnome-Shell-Extension"
 }
