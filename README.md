@@ -1,12 +1,16 @@
 # Avatar-Gnome-Shell-Extension
 
-Adds an avatar, primary system buttons, mpris media notifications and top image to the top panel.  Supports Gnome 41, 42, 43 & 44
+Adds an avatar, primary system buttons, mpris media notifications and top image to the top panel.  Supports Gnome 41, 42, 43, 44, 45
 
 Available on gnome EGO:
 
 [<img src="assets/get-it-on-ego.svg" height="100">](https://extensions.gnome.org/extension/4782/avatar/)
 
 # Changelog
+### v 26 
+- Gnome 45 support
+- Drop shell support lower than 45. If You are using gnome shell < 44 use https://github.com/pawelswiszcz/Avatar-Gnome-Shell-Extension/tree/gnome-loe-44 branch
+  
 ### v 25 
 - Gnome 44 support
 

@@ -1,25 +1,31 @@
 'use strict';
 
-const GObject = imports.gi.GObject;
-const Gtk = imports.gi.Gtk;
-const Gdk = imports.gi.Gdk;
+import GObject from 'gi://GObject';
+import Adw from 'gi://Adw';
 
-const ExtensionUtils = imports.misc.extensionUtils;
-const Me = ExtensionUtils.getCurrentExtension();
+import {ExtensionPreferences, gettext as _} from 'resource:///org/gnome/Shell/Extensions/js/extensions/prefs.js';
 
+export default class AvatarPreferences extends ExtensionPreferences {
 
-function init() {
-}
+    fillPreferencesWindow(window) {
+        window._settings = this.getSettings('org.gnome.shell.extensions.avatar');
 
-const AvatarSettings = new GObject.Class({
-    Name: 'AvatarPrefs',
-    Extends: Gtk.Box,
-    _init: function (params) {
+        const page = new Adw.PreferencesPage();
+
+        const group = new Adw.PreferencesGroup({
+            title: _('Group Title'),
+        });
+        page.add(group);
+
+        window.add(page);
+    }
+
+    _init(params) {
 
         this.parent(params);
 
         // Copy the same GSettings code from `extension.js`
-        this.settings = ExtensionUtils.getSettings('org.gnome.shell.extensions.avatar');
+        this.settings = this.getSettings('org.gnome.shell.extensions.avatar');
 
 
         let stack = new Gtk.Stack({
@@ -49,21 +55,21 @@ const AvatarSettings = new GObject.Class({
             window.set_title(`Avatar ${Me.metadata.version}`);
 
         });
-    },
+    }
 
-    createBox: function () {
+    createBox() {
         const box = new Gtk.Box();
         return box;
-    },
+    }
 
-    createGrid: function () {
+    createGrid() {
         const grid = new Gtk.Grid();
         //Give grid's characteristics
         grid.set_row_spacing(10);
         return grid;
-    },
+    }
 
-    getGeneralPage: function () {
+    getGeneralPage() {
 
         const page = this.createBox();
         const grid = this.createGrid();
@@ -102,8 +108,8 @@ const AvatarSettings = new GObject.Class({
         page.append(grid);
 
         return page;
-    },
-    getAvatarPage: function () {
+    }
+    getAvatarPage () {
 
         const page = this.createBox();
         const grid = this.createGrid();
@@ -129,8 +135,8 @@ const AvatarSettings = new GObject.Class({
         page.append(grid);
 
         return page;
-    },
-    getMprisPage: function () {
+    }
+    getMprisPage () {
 
         const page = this.createBox();
         const grid = this.createGrid();
@@ -150,9 +156,9 @@ const AvatarSettings = new GObject.Class({
         page.append(grid);
 
         return page;
-    },
+    }
 
-    getButtonsPage: function () {
+    getButtonsPage () {
 
         const page = this.createBox();
         const grid = this.createGrid();
@@ -179,9 +185,9 @@ const AvatarSettings = new GObject.Class({
         page.append(grid);
 
         return page;
-    },
+    }
 
-    getTopImagePage: function () {
+    getTopImagePage () {
         const page = this.createBox();
         const grid = this.createGrid();
 
@@ -203,9 +209,9 @@ const AvatarSettings = new GObject.Class({
         page.append(grid);
 
         return page;
-    },
+    }
 
-    getSwitch: function ($key, $text, $description = null) {
+    getSwitch($key, $text, $description = null) {
         //Create temp vars
         let gtkLabel = null;
         let toggle = null;
@@ -253,8 +259,8 @@ const AvatarSettings = new GObject.Class({
         toggle.connect('state-set', func.bind(this));
 
         return {toggle, gtkLabel};
-    },
-    getSpinButton: function ($key, $text, $rangeFrom = 1, $rangeTo = 400, $description = null) {
+    }
+    getSpinButton ($key, $text, $rangeFrom = 1, $rangeTo = 400, $description = null) {
         let toggle = new Gtk.SpinButton({halign: Gtk.Align.END});
         toggle.set_sensitive(true);
         toggle.set_range($rangeFrom, $rangeTo);
@@ -295,8 +301,8 @@ const AvatarSettings = new GObject.Class({
         }
 
         return {toggle, gtkLabel};
-    },
-    getColorPicker: function ($key, $text) {
+    }
+    getColorPicker ($key, $text) {
         let toggle = new Gtk.ColorButton();
 
         let settings = this.settings;
@@ -330,9 +336,9 @@ const AvatarSettings = new GObject.Class({
         gtkLabel.append(gtkLabelTmp);
 
         return {toggle, gtkLabel};
-    },
+    }
 
-    getFileChooserButton: function ($key, $text, $description = null) {
+    getFileChooserButton ($key, $text, $description = null) {
         //Create temp vars
         let gtkLabel = null;
         let toggle = null;
@@ -409,8 +415,8 @@ const AvatarSettings = new GObject.Class({
         toggle.connect('clicked', showFileChooserDialog.bind(this));
 
         return {toggle, gtkLabel};
-    },
-    getEntry: function ($key, $text, $description = null) {
+    }
+    getEntry ($key, $text, $description = null) {
         //Create temp vars
         let gtkLabel = null;
 
@@ -451,16 +457,8 @@ const AvatarSettings = new GObject.Class({
 
 
         return {toggle, gtkLabel};
-    },
-
-
-    isGTK4: function () {
+    }
+    isGTK4 () {
         return Gtk.get_major_version() == 4;
     }
-});
-
-function buildPrefsWidget() {
-    let widget = new AvatarSettings();
-
-    return widget;
 }

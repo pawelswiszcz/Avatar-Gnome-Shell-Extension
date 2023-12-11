@@ -1,13 +1,16 @@
-const { Clutter, GLib, GObject, St } = imports.gi;
 
-const Params = imports.misc.params;
+import GLib from 'gi://GLib';
+import GObject from 'gi://GObject';
+import St from 'gi://St';
+import {parse} from 'resource:///org/gnome/shell/misc/params.js';
+import Clutter from 'gi://Clutter';
 
 
-var TopImage = GObject.registerClass(
+export const TopImage = GObject.registerClass(
     class TopImage extends St.Bin {
         _init(imagePath, params) {
             let themeContext = St.ThemeContext.get_for_stage(global.stage);
-            params = Params.parse(params, {
+            params = parse(params, {
                 styleClass: 'top-image-icon',
                 reactive: false,
                 width: 160,

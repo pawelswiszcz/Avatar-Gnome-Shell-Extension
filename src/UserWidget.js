@@ -1,13 +1,22 @@
-const {GObject, St, Clutter, GLib, Gio} = imports.gi;
-const PopupMenu = imports.ui.popupMenu;
-const {Avatar: AvatarUserWidget, UserWidgetLabel} = imports.ui.userWidget;
-const Main = imports.ui.main;
-const Util = imports.misc.util;
-const ExtensionUtils = imports.misc.extensionUtils;
-const Me = ExtensionUtils.getCurrentExtension();
-const {Avatar} = Me.imports.src.Avatar;
+import GLib from 'gi://GLib';
+import GObject from 'gi://GObject';
+import St from 'gi://St';
+import Gio from 'gi://Gio';
+import Clutter from 'gi://Clutter';
 
-var UserWidget = GObject.registerClass(class UserWidget extends St.BoxLayout {
+import {PopupMenu} from 'resource:///org/gnome/shell/ui/popupMenu.js';
+
+import {Avatar as AvatarUserWidget, UserWidgetLabel} from 'resource:///org/gnome/shell/ui/userWidget.js';
+
+import * as Main from 'resource:///org/gnome/shell/ui/main.js';
+import * as Util from 'resource:///org/gnome/shell/misc/util.js';
+
+import {Extension} from 'resource:///org/gnome/shell/extensions/extension.js';
+
+
+import {Avatar} from './Avatar.js';
+
+export const UserWidget = GObject.registerClass(class UserWidget extends St.BoxLayout {
     _init(
         user,
         orientation = Clutter.Orientation.HORIZONTAL,
@@ -204,7 +213,7 @@ var UserWidget = GObject.registerClass(class UserWidget extends St.BoxLayout {
     }
 });
 
-var NotificationBox = GObject.registerClass(
+export const NotificationBox = GObject.registerClass(
     {
         Properties: {
             'active': GObject.ParamSpec.boolean('active', 'active', 'active',
@@ -267,7 +276,7 @@ var NotificationBox = GObject.registerClass(
 
     });
 
-var SystemButton = GObject.registerClass(
+export const SystemButton = GObject.registerClass(
     {
         Properties: {
             'active': GObject.ParamSpec.boolean('active', 'active', 'active',
@@ -327,7 +336,7 @@ var SystemButton = GObject.registerClass(
         }
     });
 
-var DoNotDisturbSwitch = GObject.registerClass({},
+export const DoNotDisturbSwitch = GObject.registerClass({},
     class DoNotDisturbSwitch extends SystemButton {
         _init(iconSize, useIcon) {
             super._init();
@@ -379,7 +388,10 @@ var DoNotDisturbSwitch = GObject.registerClass({},
         }
 
         setIcon(value) {
-            let settings = ExtensionUtils.getSettings('org.gnome.shell.extensions.avatar');
+
+            let extensionObject = Extension.lookupByURL(import.meta.url);
+            let settings = extensionObject.getSettings('org.gnome.shell.extensions.avatar');
+
             if (value == true) {
                 this._icon.set_icon_name(settings.get_string('dnd-icon-name') ?? 'notifications-symbolic');
             } else {

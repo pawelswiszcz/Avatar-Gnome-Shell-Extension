@@ -11,25 +11,25 @@
 // The author of these file is qwreey75
 // https://github.com/qwreey75/quick-settings-tweaks/blob/master/libs/gnome.js
 
-const Main = imports.ui.main
+import * as Main from 'resource:///org/gnome/shell/ui/main.js';
 
 // Quick Settings
-var QuickSettings = Main.panel.statusArea.quickSettings
-var QuickSettingsGrid = QuickSettings.menu._grid
-var QuickSettingsBox =  QuickSettings.menu.box
-var QuickSettingsActor = QuickSettings.menu.actor
-var QuickSettingsShutdownMenuBox =
+export const QuickSettings = Main.panel.statusArea.quickSettings
+export const QuickSettingsGrid = QuickSettings.menu._grid
+export const QuickSettingsBox =  QuickSettings.menu.box
+export const QuickSettingsActor = QuickSettings.menu.actor
+export const QuickSettingsShutdownMenuBox =
     QuickSettingsBox.first_child
     ?.get_children()?.find(i=>i.constructor?.name=="SystemItem")
     ?.first_child?.get_children()?.find(i=>i.constructor?.name=="ShutdownItem")
     ?.menu?.box
 
 // Date Menu
-var DateMenu = Main.panel.statusArea.dateMenu
-var DateMenuBox = DateMenu.menu.box
-var DateMenuHolder = DateMenu.menu.box.first_child.first_child
-var DateMenuNotifications =
+export const DateMenu = Main.panel.statusArea.dateMenu
+export const DateMenuBox = DateMenu.menu.box
+export const DateMenuHolder = DateMenu.menu.box.first_child.first_child
+export const DateMenuNotifications =
     DateMenuHolder.get_children()
     .find(item=>item.constructor.name=="CalendarMessageList")
-var DateMenuMediaControl = DateMenuNotifications
+export const DateMenuMediaControl = DateMenuNotifications
     .last_child.first_child.last_child.first_child

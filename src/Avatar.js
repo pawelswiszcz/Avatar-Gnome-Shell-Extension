@@ -1,14 +1,16 @@
-const { Clutter, GLib, GObject, St } = imports.gi;
 
-const Params = imports.misc.params;
+import GLib from 'gi://GLib';
+import GObject from 'gi://GObject';
+import St from 'gi://St';
+import {parse} from 'resource:///org/gnome/shell/misc/params.js';
 
 var AVATAR_ICON_SIZE = 60;
 
 
-var Avatar = GObject.registerClass(
+export const Avatar = GObject.registerClass(
 class Avatar extends St.Bin {
     _init(user, params) {
-        params = Params.parse(params, {
+        params = parse(params, {
             styleClass: 'user-icon',
             reactive: false,
             iconSize: AVATAR_ICON_SIZE,
