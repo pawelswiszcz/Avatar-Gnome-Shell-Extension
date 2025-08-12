@@ -36,7 +36,8 @@ import {
     QuickSettingsActor,
 } from './src/gnome.js';
 
-import {MediaSection} from 'resource:///org/gnome/shell/ui/mpris.js';
+import * as Mpris from 'resource:///org/gnome/shell/ui/mpris.js';
+
 
 //Creates temporary iconMenuItem variable
 let iconMenuItem = null;
@@ -63,6 +64,7 @@ function resetAfterChange(object) {
     //Destroys iconMenuItem (basically removes the option from the menu)
     if (iconMenuItem) {
         iconMenuItem.destroy();
+        QuickSettingsBox.remove_child(iconMenuItem);
     }
 
     Main.panel.statusArea.dateMenu._messageList._dndButton.show();
@@ -70,8 +72,6 @@ function resetAfterChange(object) {
 
     if (mediaMenuItem) {
         mediaMenuItem.destroy();
-        calendarMpris._shouldShow = () => true;
-        calendarMpris.show();
     }
 
     if (topImageMenuItem) {
@@ -96,7 +96,7 @@ function resetAfterChange(object) {
 }
 
 function getSystemMenu() {
-    return Main.panel.statusArea['quickSettings'].menu;
+    return Main.panel.statusArea.quickSettings;
 }
 
 export default class Avatar extends Extension {
@@ -166,7 +166,7 @@ export default class Avatar extends Extension {
 
         const methods = [
             { name: 'addAvatar', number: this.settings.get_int('order-avatar') },
-            { name: 'addMpris', number: this.settings.get_int('order-mpris') },
+            //{ name: 'addMpris', number: this.settings.get_int('order-mpris') },
             { name: 'addTopImage', number: this.settings.get_int('order-top-image') }
         ];
 
@@ -309,7 +309,7 @@ export default class Avatar extends Extension {
 
             let menu = getSystemMenu();
 
-            this._mediaSection = new MediaSection();
+            this._mediaSection = Main.panel.statusArea.dateMenu._messageList._mediaSection;
 
             let mediaBox = new St.BoxLayout({
                 vertical: true,
@@ -322,11 +322,6 @@ export default class Avatar extends Extension {
 
             menuOpenHandlerId = menu.connect('open-state-changed', this._mprisHideOnEmpty);
 
-            calendarMpris._shouldShow = () => false;
-            calendarMpris.hide();
-        } else {
-            calendarMpris._shouldShow = () => true;
-            calendarMpris.show();
         }
         
     }
