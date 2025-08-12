@@ -1,3 +1,24 @@
+### v 29
+- Fixed frezing image picker
+
+### v 26 
+- Gnome 45 support
+- Drop shell support lower than 45. If You are using gnome shell < 44 use https://github.com/pawelswiszcz/Avatar-Gnome-Shell-Extension/tree/gnome-loe-44 branch
+  
+### v 25 
+- Gnome 44 support
+
+### v 24 
+- Fixed menu is not defined
+
+### v 23
+- Fixed order of elements
+- Added Detached mode, show avatar box on the top and outline class
+- Refactoring
+- Drop shell support lower than 43. If You are using gnome shell < 43 use https://github.com/pawelswiszcz/Avatar-Gnome-Shell-Extension/tree/gnome-loe-43 branch
+
+### v 22
+- Fixed destroying `mediaSectionMenuItem`
 
 ### v 21
 - Fixed buttons style for gnome 43. Fixed Mpris `reactive` background
@@ -47,4 +68,4 @@
 
 ### v 10
 
-- Added Gnome 42 support [@isteiger](https://github.com/isteiger '@isteiger') 
+- Added Gnome 42 support [@isteiger](https://github.com/isteiger '@isteiger')
