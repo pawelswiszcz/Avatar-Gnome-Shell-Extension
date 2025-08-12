@@ -18,23 +18,26 @@
 
 /* exported init */
 
-const { AccountsService, GObject, St, Clutter, GLib, Gio, Atk, Shell } = imports.gi;
+import GLib from 'gi://GLib';
+import St from 'gi://St';
+import AccountsService from 'gi://AccountsService';
+import Clutter from 'gi://Clutter';
 
-const ExtensionUtils = imports.misc.extensionUtils;
-const Main = imports.ui.main;
-const Util = imports.misc.util;
-const PopupMenu = imports.ui.popupMenu;
+import * as Main from 'resource:///org/gnome/shell/ui/main.js';
 
+import { Extension, gettext as _ } from 'resource:///org/gnome/shell/extensions/extension.js';
 
-const _ = ExtensionUtils.gettext;
-const Me = ExtensionUtils.getCurrentExtension();
+import { UserWidget } from './src/UserWidget.js';
+import { TopImage } from './src/TopImage.js';
 
-const Config = imports.misc.config;
-const shellVersion = parseFloat(Config.PACKAGE_VERSION);
+import {
+    QuickSettingsGrid,
+    QuickSettingsBox,
+    QuickSettingsActor,
+} from './src/gnome.js';
 
-const { UserWidget } = Me.imports.src.UserWidget;
-const { TopImage } = Me.imports.src.TopImage;
-const Mpris = imports.ui.mpris;
+import * as Mpris from 'resource:///org/gnome/shell/ui/mpris.js';
+
 
 //Creates temporary iconMenuItem variable
 let iconMenuItem = null;
@@ -48,28 +51,20 @@ let calendarMpris = Main.panel.statusArea.dateMenu._messageList._mediaSection;
 
 let menuOpenHandlerId = null;
 
-const {
-    QuickSettingsGrid,
-    QuickSettingsBox,
-    QuickSettingsActor,
-    QuickSettingsShutdownMenuBox
-} = Me.imports.src.gnome
-
-
-
-function resetAfterChange() {
+function resetAfterChange(object) {
     //Disconnects systemMenu
 
     let menu = getSystemMenu();
 
     let systemMenu = menu._system;
-    if (this._menuOpenStateChangedId) {
-        systemMenu.menu.disconnect(this._menuOpenStateChangedId);
-        this._menuOpenStateChangedId = 0;
+    if (object._menuOpenStateChangedId) {
+        systemMenu.menu.disconnect(object._menuOpenStateChangedId);
+        object._menuOpenStateChangedId = 0;
     }
     //Destroys iconMenuItem (basically removes the option from the menu)
     if (iconMenuItem) {
         iconMenuItem.destroy();
+        QuickSettingsBox.remove_child(iconMenuItem);
     }
 
     Main.panel.statusArea.dateMenu._messageList._dndButton.show();
@@ -77,8 +72,6 @@ function resetAfterChange() {
 
     if (mediaMenuItem) {
         mediaMenuItem.destroy();
-        calendarMpris._shouldShow = () => true;
-        calendarMpris.show();
     }
 
     if (topImageMenuItem) {
@@ -103,19 +96,13 @@ function resetAfterChange() {
 }
 
 function getSystemMenu() {
-    if (shellVersion >= 43) {
-        return Main.panel.statusArea['quickSettings'].menu;
-    }
-    return Main.panel.statusArea['aggregateMenu'].menu;
+    return Main.panel.statusArea.quickSettings;
 }
 
-class Extension {
-    constructor(uuid) {
-        this._uuid = uuid;
-    }
+export default class Avatar extends Extension {
 
     enable() {
-        this.settings = ExtensionUtils.getSettings('org.gnome.shell.extensions.avatar');
+        this.settings = this.getSettings('org.gnome.shell.extensions.avatar');
 
         let _that = this;
 
@@ -152,7 +139,7 @@ class Extension {
 
         for (const i in changedElements) {
             this.settings.connect(changedElements[i], function () {
-                resetAfterChange();
+                resetAfterChange(_that);
                 _that.updateExtensionAppearance();
             });
         }
@@ -161,7 +148,9 @@ class Extension {
     }
 
     disable() {
-        resetAfterChange();
+        let _that = this;
+
+        resetAfterChange(_that);
         this.settings = null;
     }
 
@@ -177,7 +166,7 @@ class Extension {
 
         const methods = [
             { name: 'addAvatar', number: this.settings.get_int('order-avatar') },
-            { name: 'addMpris', number: this.settings.get_int('order-mpris') },
+            //{ name: 'addMpris', number: this.settings.get_int('order-mpris') },
             { name: 'addTopImage', number: this.settings.get_int('order-top-image') }
         ];
 
@@ -195,7 +184,7 @@ class Extension {
             menu.actor.width = this.settings.get_int('set-custom-panel-menu-width');
         }
 
-        
+
         QuickSettingsBox.add_child(iconMenuItem)
 
         const detachedMode = this.settings.get_boolean('detached-mode');
@@ -212,7 +201,7 @@ class Extension {
             QuickSettingsGrid.style_class = QuickSettingsGrid.style_class + " popup-menu-content quick-settings";
 
             let quickSettingsModal = QuickSettingsBox.first_child;
-            
+
             const top = this.settings.get_boolean('show-avatar-on-top');
 
             if (top) {
@@ -283,12 +272,12 @@ class Extension {
     }
 
     _mprisHideOnEmpty() {
-        let isEmpty = mediaMenuItem._players.size;
+        let isEmpty = mediaMenuItem?._players.size;
 
         if (isEmpty === 0)
-            mediaSectionMenuItem.hide();
+            mediaSectionMenuItem?.hide();
         else
-            mediaSectionMenuItem.show();
+            mediaSectionMenuItem?.show();
     };
 
     addAvatar(iconMenuItem) {
@@ -315,11 +304,12 @@ class Extension {
     }
     addMpris(iconMenuItem) {
 
+        
         if (this.settings.get_boolean('show-media-center')) {
 
             let menu = getSystemMenu();
 
-            this._mediaSection = new Mpris.MediaSection();
+            this._mediaSection = Main.panel.statusArea.dateMenu._messageList._mediaSection;
 
             let mediaBox = new St.BoxLayout({
                 vertical: true,
@@ -332,12 +322,8 @@ class Extension {
 
             menuOpenHandlerId = menu.connect('open-state-changed', this._mprisHideOnEmpty);
 
-            calendarMpris._shouldShow = () => false;
-            calendarMpris.hide();
-        } else {
-            calendarMpris._shouldShow = () => true;
-            calendarMpris.show();
         }
+        
     }
     addTopImage(iconMenuItem) {
 
@@ -362,8 +348,3 @@ class Extension {
         }
     }
 }
-
-function init(meta) {
-    return new Extension(meta.uuid);
-}
-
