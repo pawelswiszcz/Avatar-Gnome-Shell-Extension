@@ -4,20 +4,24 @@ import St from 'gi://St';
 import Gio from 'gi://Gio';
 import Clutter from 'gi://Clutter';
 
-import {PopupMenu} from 'resource:///org/gnome/shell/ui/popupMenu.js';
+import { PopupMenu } from 'resource:///org/gnome/shell/ui/popupMenu.js';
 
-import {Avatar as AvatarUserWidget, UserWidgetLabel} from 'resource:///org/gnome/shell/ui/userWidget.js';
+import { Avatar as AvatarUserWidget, UserWidgetLabel } from 'resource:///org/gnome/shell/ui/userWidget.js';
 
 import * as Main from 'resource:///org/gnome/shell/ui/main.js';
 import * as Util from 'resource:///org/gnome/shell/misc/util.js';
 
-import {Extension} from 'resource:///org/gnome/shell/extensions/extension.js';
+import { Extension } from 'resource:///org/gnome/shell/extensions/extension.js';
 
 
-import {Avatar} from './Avatar.js';
+import { Avatar } from './Avatar.js';
+
+import * as SystemActions from 'resource:///org/gnome/shell/misc/systemActions.js';
+
 
 export const UserWidget = GObject.registerClass(class UserWidget extends St.BoxLayout {
     _init(
+        extension,
         user,
         orientation = Clutter.Orientation.HORIZONTAL,
         useLabel = false,
@@ -36,6 +40,8 @@ export const UserWidget = GObject.registerClass(class UserWidget extends St.BoxL
     ) {
         // If user is null, that implies a username-based login authorization.
         this._user = user;
+        this._extension = extension;
+
 
         let vertical = orientation === Clutter.Orientation.VERTICAL;
         let xAlign = vertical ? Clutter.ActorAlign.CENTER : Clutter.ActorAlign.START;
@@ -58,7 +64,7 @@ export const UserWidget = GObject.registerClass(class UserWidget extends St.BoxL
         if (0 == avatarIconSize) {
             this._avatar = new AvatarUserWidget(user);
         } else {
-            this._avatar = new Avatar(user, {'iconSize': avatarIconSize});
+            this._avatar = new Avatar(user, { 'iconSize': avatarIconSize });
         }
 
         this._avatar.x_align = Clutter.ActorAlign.CENTER;
@@ -114,7 +120,7 @@ export const UserWidget = GObject.registerClass(class UserWidget extends St.BoxL
 
                 notificationBox.style = notificationBoxStyle;
 
-                let dndSwitch = new DoNotDisturbSwitch(systemButtonsIconSize, dndUseIcon);
+                let dndSwitch = new DoNotDisturbSwitch(this._extension, systemButtonsIconSize, dndUseIcon);
 
                 notificationBox.add_child(dndSwitch);
                 notificationBox.add_child(this.getSystemButton(systemButtonsIconSize));
@@ -171,11 +177,11 @@ export const UserWidget = GObject.registerClass(class UserWidget extends St.BoxL
     }
 
     closeSystem() {
-        Util.spawn(['gnome-session-quit', '--power-off']);
+        SystemActions.getDefault().activatePowerOff()
     }
 
     suspendSystem() {
-        Util.spawn(['systemctl', 'suspend']);
+        SystemActions.getDefault().activateSuspend();
     }
 
     getPowerOffIcon(systemButtonsIconSize) {
@@ -338,9 +344,9 @@ export const SystemButton = GObject.registerClass(
 
 export const DoNotDisturbSwitch = GObject.registerClass({},
     class DoNotDisturbSwitch extends SystemButton {
-        _init(iconSize, useIcon) {
+        _init(extension, iconSize, useIcon) {
             super._init();
-
+            this._extension = extension;
             this._toggle_mode = false;
 
             this.add_style_class_name('notify-button');
@@ -353,7 +359,7 @@ export const DoNotDisturbSwitch = GObject.registerClass({},
             this._show_banners = this._settings.get_boolean('show-banners');
 
             if (useIcon) {
-                this._icon = new St.Icon({iconSize: iconSize});
+                this._icon = new St.Icon({ iconSize: iconSize });
 
                 this.setIcon(this._show_banners);
 
@@ -382,15 +388,13 @@ export const DoNotDisturbSwitch = GObject.registerClass({},
             }
 
             this.connect('destroy', () => {
-                this._settings.run_dispose();
                 this._settings = null;
             });
         }
 
         setIcon(value) {
 
-            let extensionObject = Extension.lookupByURL(import.meta.url);
-            let settings = extensionObject.getSettings('org.gnome.shell.extensions.avatar');
+            let settings = this._extension.getSettings('org.gnome.shell.extensions.avatar');
 
             if (value == true) {
                 this._icon.set_icon_name(settings.get_string('dnd-icon-name') ?? 'notifications-symbolic');

@@ -43,11 +43,8 @@ import * as Mpris from 'resource:///org/gnome/shell/ui/mpris.js';
 let iconMenuItem = null;
 
 let mediaSectionMenuItem = null;
-let mediaMenuItem = null;
 
 let topImageMenuItem = null;
-
-let calendarMpris = Main.panel.statusArea.dateMenu._messageList._mediaSection;
 
 let menuOpenHandlerId = null;
 
@@ -70,10 +67,6 @@ function resetAfterChange(object) {
     Main.panel.statusArea.dateMenu._messageList._dndButton.show();
     Main.panel.statusArea.dateMenu._messageList._dndButton.label_actor.show();
 
-    if (mediaMenuItem) {
-        mediaMenuItem.destroy();
-    }
-
     if (topImageMenuItem) {
         topImageMenuItem.destroy();
     }
@@ -91,7 +84,6 @@ function resetAfterChange(object) {
     iconMenuItem = null
     mediaSectionMenuItem = null;
     topImageMenuItem = null;
-    mediaMenuItem = null;
 
 }
 
@@ -223,6 +215,7 @@ export default class Avatar extends Extension {
         let orientation = Clutter.Orientation.HORIZONTAL;
 
         const avatar = new UserWidget(
+            this,
             user,
             orientation,
             this.settings.get_boolean('show-name'),
@@ -249,6 +242,7 @@ export default class Avatar extends Extension {
         let orientation = Clutter.Orientation.VERTICAL;
 
         const avatar = new UserWidget(
+            this,
             user,
             orientation,
             this.settings.get_boolean('show-name'),
@@ -272,7 +266,7 @@ export default class Avatar extends Extension {
     }
 
     _mprisHideOnEmpty() {
-        let isEmpty = mediaMenuItem?._players.size;
+        let isEmpty = mediaSectionMenuItem?._players.size;
 
         if (isEmpty === 0)
             mediaSectionMenuItem?.hide();
@@ -316,7 +310,7 @@ export default class Avatar extends Extension {
                 style_class: "media-box margin-bottom-10"
             });
 
-            mediaBox.add_child(this._mediaSection);
+            mediaBox.add_child(item);
 
             iconMenuItem.add_child(mediaBox);
 

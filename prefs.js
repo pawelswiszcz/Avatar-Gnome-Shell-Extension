@@ -21,8 +21,8 @@ export default class AvatarPreferences extends ExtensionPreferences {
         const avatarGroup = this.getAvatarGroup(settings);
         page.add(avatarGroup);
 
-        const mprisGroup = this.getMprisGroup(settings);
-        page.add(mprisGroup);
+        //const mprisGroup = this.getMprisGroup(settings);
+        // page.add(mprisGroup);
 
         const buttonsGroup = this.getButtonsGroup(settings);
         page.add(buttonsGroup);
