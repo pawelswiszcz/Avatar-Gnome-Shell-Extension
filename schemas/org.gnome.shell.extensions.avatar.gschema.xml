@@ -132,5 +132,15 @@
       <default>70</default>
       <summary>Set Top image size hight</summary>
     </key>
+    <key name="show-top-image-separate" type="b">
+      <default>false</default>
+      <summary>Show Top image in separate menu item</summary>
+      <description>If true, the Top image will be displayed in its own menu item.</description>
+    </key>
+    <key name="display-order" type="s">
+      <default>"avatar-top"</default>
+      <summary>Display order of Avatar and Top Image</summary>
+      <description>Controls the order in which Avatar and Top Image are displayed: "avatar-top" or "top-avatar".</description>
+    </key>
   </schema>
 </schemalist>

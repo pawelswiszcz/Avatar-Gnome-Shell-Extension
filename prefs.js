@@ -41,11 +41,33 @@ export default class AvatarPreferences extends ExtensionPreferences {
         group.add(this.getSwitch(settings, 'show-avatar-on-top', 'Show avatar box on the top', 'only for detached mode'));
         group.add(this.getSwitch(settings, 'add-outline-class', 'Add outline class', 'use this option for detached mode'));
         group.add(this.getSpinButton(settings, 'set-custom-panel-menu-width', 'Set custom panel menu width', 0, 2000, 'set to 0 to use Your default value, needs restart gnome shell ALT+F2 -> r'));
-        group.add(this.getSpinButton(settings, 'order-avatar', 'Set Order for Avatar', 0, 100, 'default 0'));
-        group.add(this.getSpinButton(settings, 'order-mpris', 'Set Order for Media center', 0, 100, 'default 1'));
-        group.add(this.getSpinButton(settings, 'order-top-image', 'Set Order for Top image', 0, 100, 'default 2'));
+        //group.add(this.getSpinButton(settings, 'order-avatar', 'Set Order for Avatar', 0, 100, 'default 0'));
+        //group.add(this.getSpinButton(settings, 'order-mpris', 'Set Order for Media center', 0, 100, 'default 1'));
+        //group.add(this.getSpinButton(settings, 'order-top-image', 'Set Order for Top image', 0, 100, 'default 2'));
+        group.add(this.getSwitch(settings, 'show-top-image-separate', 'Show Top image in separate menu item', 'If true, the Top image will be displayed in its own menu item.'));
+        group.add(this.getDisplayOrderCombo(settings, 'display-order', 'Display Order'));
 
         return group;
+    }
+
+    getDisplayOrderCombo(settings, key, title) {
+        const row = new Adw.ActionRow({
+            title: title,
+        });
+
+        const comboBox = new Gtk.ComboBoxText();
+        comboBox.append('avatar-top', 'Avatar, Top Image');
+        comboBox.append('top-avatar', 'Top Image, Avatar');
+        comboBox.set_active_id(settings.get_string(key));
+
+        comboBox.connect('changed', () => {
+            settings.set_string(key, comboBox.get_active_id());
+        });
+
+        row.add_suffix(comboBox);
+        row.activatable_widget = comboBox;
+
+        return row;
     }
 
     getAvatarGroup(settings) {

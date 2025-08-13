@@ -46,6 +46,8 @@ let mediaSectionMenuItem = null;
 
 let topImageMenuItem = null;
 
+let topImageSeparateMenuItem = null;
+
 let menuOpenHandlerId = null;
 
 function resetAfterChange(object) {
@@ -71,6 +73,10 @@ function resetAfterChange(object) {
         topImageMenuItem.destroy();
     }
 
+    if (topImageSeparateMenuItem) {
+        topImageSeparateMenuItem.destroy();
+    }
+
     if (mediaSectionMenuItem) {
         mediaSectionMenuItem.destroy();
     }
@@ -84,6 +90,7 @@ function resetAfterChange(object) {
     iconMenuItem = null
     mediaSectionMenuItem = null;
     topImageMenuItem = null;
+    topImageSeparateMenuItem = null;
 
 }
 
@@ -127,6 +134,8 @@ export default class Avatar extends Extension {
             'changed::top-image-size-height',
             'changed::dnd-icon-name',
             'changed::dnd-icon-name-disabled',
+            'changed::show-top-image-separate',
+            'changed::display-order',
         ];
 
         for (const i in changedElements) {
@@ -156,17 +165,39 @@ export default class Avatar extends Extension {
             style_class: itemMenuIconClass
         });
 
-        const methods = [
-            { name: 'addAvatar', number: this.settings.get_int('order-avatar') },
-            //{ name: 'addMpris', number: this.settings.get_int('order-mpris') },
-            { name: 'addTopImage', number: this.settings.get_int('order-top-image') }
-        ];
+        const showTopImageSeparate = this.settings.get_boolean('show-top-image-separate');
+        const displayOrder = this.settings.get_string('display-order');
+
+        if (showTopImageSeparate) {
+            topImageSeparateMenuItem = new St.BoxLayout({
+                vertical: true,
+                style_class: itemMenuIconClass
+            });
+        }
+
+        const methods = [];
+
+        if (displayOrder === 'avatar-top') {
+            methods.push({ name: 'addAvatar', number: 0 });
+            if (this.settings.get_boolean('show-top-image')) {
+                methods.push({ name: 'addTopImage', number: 1 });
+            }
+        } else { // top-avatar
+            if (this.settings.get_boolean('show-top-image')) {
+                methods.push({ name: 'addTopImage', number: 0 });
+            }
+            methods.push({ name: 'addAvatar', number: 1 });
+        }
 
         methods.sort((a, b) => a.number - b.number);
 
         methods.forEach(method => {
             const methodName = method.name;
-            this[methodName](iconMenuItem);
+            if (showTopImageSeparate && methodName === 'addTopImage') {
+                this[methodName](topImageSeparateMenuItem);
+            } else {
+                this[methodName](iconMenuItem);
+            }
         });
 
         let panelWidth = this.settings.get_int('set-custom-panel-menu-width');
@@ -176,8 +207,22 @@ export default class Avatar extends Extension {
             menu.actor.width = this.settings.get_int('set-custom-panel-menu-width');
         }
 
-
-        QuickSettingsBox.add_child(iconMenuItem)
+        // Handle adding to QuickSettingsBox based on separate setting and order
+        if (showTopImageSeparate) {
+            if (displayOrder === 'avatar-top') {
+                QuickSettingsBox.add_child(iconMenuItem);
+                if (this.settings.get_boolean('show-top-image')) {
+                    QuickSettingsBox.add_child(topImageSeparateMenuItem);
+                }
+            } else { // top-avatar
+                if (this.settings.get_boolean('show-top-image')) {
+                    QuickSettingsBox.add_child(topImageSeparateMenuItem);
+                }
+                QuickSettingsBox.add_child(iconMenuItem);
+            }
+        } else {
+            QuickSettingsBox.add_child(iconMenuItem);
+        }
 
         const detachedMode = this.settings.get_boolean('detached-mode');
 
@@ -196,14 +241,12 @@ export default class Avatar extends Extension {
 
             const top = this.settings.get_boolean('show-avatar-on-top');
 
-            if (top) {
+            // Re-add quickSettingsModal after our custom items
+            if (quickSettingsModal) {
                 QuickSettingsBox.remove_child(quickSettingsModal);
-                QuickSettingsBox.add_child(iconMenuItem);
-                QuickSettingsBox.add_child(quickSettingsModal);
-            } else {
-                QuickSettingsBox.add_child(iconMenuItem);
                 QuickSettingsBox.add_child(quickSettingsModal);
             }
+
         } else {
             QuickSettingsBox.style_class = this.boxBackupClass;
             QuickSettingsActor.style_class = this.actorBackupClass;
