@@ -208,6 +208,16 @@ export const UserWidget = GObject.registerClass(class UserWidget extends St.BoxL
             this._user.disconnect(this._userChangedId);
             this._userChangedId = 0;
         }
+
+        if (this._label) {
+            this._label.destroy();
+            this._label = null;
+        }
+
+        if (this._avatar) {
+            this._avatar.destroy();
+            this._avatar = null;
+        }
     }
 
     _updateUser() {
@@ -359,7 +369,7 @@ export const DoNotDisturbSwitch = GObject.registerClass({},
 
                 this.setIcon(this._show_banners);
 
-                this.connect('button-release-event', () => {
+                this._buttonReleaseEventId = this.connect('button-release-event', () => {
                     this._settings.set_boolean('show-banners', !(this._show_banners));
 
                     this._show_banners = this._settings.get_boolean('show-banners');
@@ -371,11 +381,11 @@ export const DoNotDisturbSwitch = GObject.registerClass({},
             } else {
                 this._switch = new PopupMenu.Switch(this._show_banners);
 
-                this._settings.bind('show-banners',
+                this._settingsBindingId = this._settings.bind('show-banners',
                     this._switch, 'state',
                     Gio.SettingsBindFlags.DEFAULT);
 
-                this.connect('button-release-event', () => {
+                this._buttonReleaseEventId = this.connect('button-release-event', () => {
                     this._show_banners = !(this._settings.get_boolean('show-banners'));
                     this._switch.state = this._show_banners;
                 });
@@ -383,9 +393,19 @@ export const DoNotDisturbSwitch = GObject.registerClass({},
                 this.set_child(this._switch);
             }
 
-            this.connect('destroy', () => {
-                this._settings = null;
-            });
+            this.connect('destroy', this._onDestroy.bind(this));
+        }
+
+        _onDestroy() {
+            if (this._settingsBindingId) {
+                this._settings.unbind(this._settingsBindingId);
+                this._settingsBindingId = 0;
+            }
+            if (this._buttonReleaseEventId) {
+                this.disconnect(this._buttonReleaseEventId);
+                this._buttonReleaseEventId = 0;
+            }
+            this._settings = null;
         }
 
         setIcon(value) {
