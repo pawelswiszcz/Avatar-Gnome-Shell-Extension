@@ -2,7 +2,7 @@
   "uuid": "avatar@pawel.swiszcz.com",
   "name": "Avatar",
   "description": "Add Avatar, Top image into the panel. Options to change: \n * Avatar (horizontal/vertical, shades, visibility of username and hostname) \n * Primary buttons \n * MPRIS \n * Top image (can be Your own image from system) ",
-  "version": 29,
+  "version": 31,
   "shell-version": [
     "45",
     "46",

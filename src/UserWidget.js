@@ -10,10 +10,6 @@ import { Avatar as AvatarUserWidget, UserWidgetLabel } from 'resource:///org/gno
 
 import * as Main from 'resource:///org/gnome/shell/ui/main.js';
 import * as Util from 'resource:///org/gnome/shell/misc/util.js';
-
-import { Extension } from 'resource:///org/gnome/shell/extensions/extension.js';
-
-
 import { Avatar } from './Avatar.js';
 
 import * as SystemActions from 'resource:///org/gnome/shell/misc/systemActions.js';
