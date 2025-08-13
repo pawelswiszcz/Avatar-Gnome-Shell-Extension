@@ -61,8 +61,7 @@ function resetAfterChange(object) {
         object._menuOpenStateChangedId = 0;
     }
     //Destroys iconMenuItem (basically removes the option from the menu)
-    if (iconMenuItem) {
-        iconMenuItem.destroy();
+    if (iconMenuItem && QuickSettingsBox.contains(iconMenuItem)) {
         QuickSettingsBox.remove_child(iconMenuItem);
     }
 
@@ -73,8 +72,8 @@ function resetAfterChange(object) {
         topImageMenuItem.destroy();
     }
 
-    if (topImageSeparateMenuItem) {
-        topImageSeparateMenuItem.destroy();
+    if (topImageSeparateMenuItem && QuickSettingsBox.contains(topImageSeparateMenuItem)) {
+        QuickSettingsBox.remove_child(topImageSeparateMenuItem);
     }
 
     if (mediaSectionMenuItem) {
@@ -89,7 +88,7 @@ function resetAfterChange(object) {
 
     iconMenuItem = null
     mediaSectionMenuItem = null;
-    topImageMenuItem = null;
+    topImageMenuItem = null
     topImageSeparateMenuItem = null;
 
 }
