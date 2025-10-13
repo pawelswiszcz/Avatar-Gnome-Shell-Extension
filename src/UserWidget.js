@@ -125,11 +125,11 @@ export const UserWidget = GObject.registerClass(class UserWidget extends St.BoxL
 
                 this.add_child(notificationBox);
 
-                Main.panel.statusArea.dateMenu._messageList._dndButton.hide();
-                Main.panel.statusArea.dateMenu._messageList._dndButton.label_actor.hide();
+                Main.panel.statusArea.dateMenu._messageList?._dndButton?.hide();
+                Main.panel.statusArea.dateMenu._messageList?._dndButton?.label_actor?.hide();
             } else {
-                Main.panel.statusArea.dateMenu._messageList._dndButton.show();
-                Main.panel.statusArea.dateMenu._messageList._dndButton.label_actor.show();
+                Main.panel.statusArea.dateMenu._messageList?._dndButton?.show();
+                Main.panel.statusArea.dateMenu._messageList?._dndButton?.label_actor?.show();
             }
 
             this._userLoadedId = this._user.connect('notify::is-loaded', this._updateUser.bind(this));
